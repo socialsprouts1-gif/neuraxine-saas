@@ -1,208 +1,147 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  Bot,
-  GitBranch,
-  Megaphone,
-  Users,
-  Brain,
-  BarChart3,
-  ShoppingCart,
-  Wand2,
-  Plug,
-  Globe,
-  Mic,
-  Calendar,
-} from "lucide-react";
+import { MessageSquare, Target, Eye, Sparkles, BarChart3, Wand2, ShieldCheck, Zap, Brain } from "lucide-react";
 
 const features = [
   {
-    icon: Bot,
-    color: "#00FF87",
-    bgColor: "rgba(0,255,135,0.1)",
-    borderColor: "rgba(0,255,135,0.2)",
-    title: "AI Chatbot Builder",
-    desc: "Train AI chatbots on your business data — FAQs, products, policies. Deploy multilingual bots with human handoff in minutes.",
-    tags: ["GPT-4", "Claude", "Gemini"],
+    icon: Wand2,
+    color: "#C6FF00",
+    bgColor: "rgba(198,255,0,0.1)",
+    borderColor: "rgba(198,255,0,0.2)",
+    title: "AI Campaign Builder",
+    desc: "Type a natural language prompt and get a complete Meta ad campaign — objective, budget, audience, copy, and CTA — in under 60 seconds.",
+    tags: ["GPT-4o", "Natural Language", "Auto-Structure"],
   },
   {
-    icon: GitBranch,
+    icon: Target,
     color: "#00D4FF",
     bgColor: "rgba(0,212,255,0.1)",
     borderColor: "rgba(0,212,255,0.2)",
-    title: "Visual Workflow Builder",
-    desc: "Drag-and-drop automation builder. Create follow-up sequences, abandoned cart recovery, and onboarding flows without code.",
-    tags: ["No-Code", "Zapier-like", "n8n"],
+    title: "Meta Ads Integration",
+    desc: "Direct MCP integration with Meta Business Suite. Fetch accounts, pages, pixels, and publish campaigns without leaving AdPilot.",
+    tags: ["Meta API", "MCP Server", "Real-time"],
   },
   {
-    icon: Megaphone,
+    icon: Eye,
     color: "#A855F7",
     bgColor: "rgba(168,85,247,0.1)",
     borderColor: "rgba(168,85,247,0.2)",
-    title: "Bulk Campaigns",
-    desc: "Broadcast personalized messages to thousands. Schedule campaigns, segment audiences, track opens and conversions.",
-    tags: ["Broadcast", "Scheduling", "Templates"],
+    title: "Ad Preview Studio",
+    desc: "See exactly how your ads look before launch — Facebook Feed, Instagram Feed, Stories, and Reels previews in real time.",
+    tags: ["FB Feed", "IG Stories", "Reels"],
   },
   {
-    icon: Users,
-    color: "#F59E0B",
-    bgColor: "rgba(245,158,11,0.1)",
-    borderColor: "rgba(245,158,11,0.2)",
-    title: "Built-in CRM",
-    desc: "Full lead pipeline with tags, notes, scores, and stages. AI predicts conversion probability for every lead.",
-    tags: ["Pipeline", "Lead Scoring", "AI Insights"],
-  },
-  {
-    icon: Brain,
-    color: "#EC4899",
-    bgColor: "rgba(236,72,153,0.1)",
-    borderColor: "rgba(236,72,153,0.2)",
-    title: "AI Sales Assistant",
-    desc: "AI qualifies leads, recommends replies, summarizes conversations, and detects purchase intent in real time.",
-    tags: ["Intent Detection", "Reply AI", "Summaries"],
+    icon: Sparkles,
+    color: "#C6FF00",
+    bgColor: "rgba(198,255,0,0.1)",
+    borderColor: "rgba(198,255,0,0.2)",
+    title: "AI Suggestions Engine",
+    desc: "Get smart recommendations for copy variations, UGC hooks, retargeting audiences, budget splits, and creative angles tailored to your business.",
+    tags: ["Copy AI", "Targeting Tips", "Budget Reco"],
   },
   {
     icon: BarChart3,
-    color: "#00D4FF",
-    bgColor: "rgba(0,212,255,0.1)",
-    borderColor: "rgba(0,212,255,0.2)",
-    title: "Analytics Dashboard",
-    desc: "Real-time insights on response rates, conversion, revenue, campaign performance, and chatbot effectiveness.",
-    tags: ["Real-time", "Revenue", "Funnels"],
-  },
-  {
-    icon: ShoppingCart,
-    color: "#00FF87",
-    bgColor: "rgba(0,255,135,0.1)",
-    borderColor: "rgba(0,255,135,0.2)",
-    title: "WhatsApp Commerce",
-    desc: "Product catalogs, order tracking, payment links, automated invoices, and COD support directly in WhatsApp.",
-    tags: ["Shopify", "WooCommerce", "Payments"],
-  },
-  {
-    icon: Wand2,
-    color: "#A855F7",
-    bgColor: "rgba(168,85,247,0.1)",
-    borderColor: "rgba(168,85,247,0.2)",
-    title: "AI Content Generator",
-    desc: "Generate marketing messages, sales copy, follow-up scripts, and campaign hooks with AI — tailored to your brand.",
-    tags: ["Copywriting", "Templates", "Brand Voice"],
-  },
-  {
-    icon: Plug,
     color: "#F59E0B",
     bgColor: "rgba(245,158,11,0.1)",
     borderColor: "rgba(245,158,11,0.2)",
-    title: "Powerful Integrations",
-    desc: "Connect to Shopify, HubSpot, Stripe, Calendly, Google Sheets, Zapier, Slack, and WhatsApp Cloud API natively.",
-    tags: ["Zapier", "Stripe", "HubSpot"],
+    title: "Campaign Analytics",
+    desc: "Track spend, leads, CTR, CPC, CPM, ROAS, and cost per lead. AI surfaces optimization tips when it detects anomalies.",
+    tags: ["ROAS", "CPL", "CTR", "AI Insights"],
   },
   {
-    icon: Globe,
-    color: "#00D4FF",
-    bgColor: "rgba(0,212,255,0.1)",
-    borderColor: "rgba(0,212,255,0.2)",
-    title: "White Label",
-    desc: "Agencies can white-label the entire platform — custom domains, branding, client workspaces, and reseller billing.",
-    tags: ["Agencies", "Custom Domain", "Resell"],
-  },
-  {
-    icon: Mic,
-    color: "#EC4899",
-    bgColor: "rgba(236,72,153,0.1)",
-    borderColor: "rgba(236,72,153,0.2)",
-    title: "AI Voice Agent",
-    desc: "Understand voice notes, respond with text-to-speech, and handle multilingual voice conversations automatically.",
-    tags: ["STT", "TTS", "Multilingual"],
-  },
-  {
-    icon: Calendar,
+    icon: MessageSquare,
     color: "#00FF87",
     bgColor: "rgba(0,255,135,0.1)",
     borderColor: "rgba(0,255,135,0.2)",
-    title: "Appointment Booking",
-    desc: "Let AI schedule, confirm, and remind clients of appointments. Integrated with Calendly and Google Calendar.",
-    tags: ["Calendly", "Reminders", "AI Scheduling"],
+    title: "Conversational Interface",
+    desc: "Chat with AdPilot like ChatGPT. Pause ads, change budgets, request copy variations, and launch campaigns — all through chat.",
+    tags: ["Chat UI", "AI Commands", "Live Control"],
+  },
+  {
+    icon: Brain,
+    color: "#00D4FF",
+    bgColor: "rgba(0,212,255,0.1)",
+    borderColor: "rgba(0,212,255,0.2)",
+    title: "Smart Audience Builder",
+    desc: "AI suggests custom audiences, lookalikes, retargeting pools from page engagers and WhatsApp contacts — no guesswork.",
+    tags: ["Custom Audiences", "Lookalikes", "Retargeting"],
+  },
+  {
+    icon: ShieldCheck,
+    color: "#A855F7",
+    bgColor: "rgba(168,85,247,0.1)",
+    borderColor: "rgba(168,85,247,0.2)",
+    title: "Policy Guard",
+    desc: "Automatic Meta policy check before publishing. AdPilot flags potential violations and suggests compliant alternatives.",
+    tags: ["Policy Check", "Compliance", "Auto-Fix"],
+  },
+  {
+    icon: Zap,
+    color: "#C6FF00",
+    bgColor: "rgba(198,255,0,0.1)",
+    borderColor: "rgba(198,255,0,0.2)",
+    title: "One-Click Launch",
+    desc: "Review campaign summary, approve with a click. AdPilot handles campaign → ad set → creative → ad creation via Meta API in seconds.",
+    tags: ["Instant Launch", "Review Screen", "Meta API"],
   },
 ];
 
 export default function Features() {
   return (
-    <section id="features" className="relative py-28 overflow-hidden">
-      <div className="absolute inset-0 dot-pattern opacity-30" />
+    <section id="features" className="py-28 relative overflow-hidden">
+      <div className="absolute inset-0 bg-mesh-green opacity-40" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center space-y-4 mb-16"
+          className="text-center mb-16"
         >
-          <span className="section-badge">Platform Features</span>
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Everything you need to{" "}
-            <span className="gradient-text-green">automate growth</span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#C6FF00]/10 border border-[#C6FF00]/20 text-[#C6FF00] text-sm font-medium mb-6">
+            <Sparkles className="w-3.5 h-3.5" />
+            Everything you need to win with Meta Ads
+          </div>
+          <h2 className="text-4xl sm:text-5xl font-black mb-4">
+            The AI-native Meta Ads
+            <br />
+            <span className="gradient-text-green">operating system</span>
           </h2>
-          <p className="text-lg text-white/60 max-w-2xl mx-auto">
-            From AI chatbots to full CRM pipelines — WhatsFlow AI is the complete
-            WhatsApp automation stack for modern businesses.
+          <p className="text-lg text-white/50 max-w-2xl mx-auto">
+            From prompt to published campaign in minutes. AdPilot AI handles targeting,
+            copy, creatives, budgets, and optimization — you just describe the goal.
           </p>
         </motion.div>
 
-        {/* Features grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {features.map((feat, i) => (
+          {features.map((f, i) => (
             <motion.div
-              key={feat.title}
-              initial={{ opacity: 0, y: 30 }}
+              key={f.title}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.05 }}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="group relative glass-card p-6 hover:border-white/20 transition-all duration-300 hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)] cursor-pointer"
+              transition={{ delay: i * 0.05 }}
+              className="glass-card p-6 hover:border-white/20 transition-all duration-300 hover:-translate-y-1 group"
             >
-              {/* Hover glow */}
               <div
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{
-                  background: `radial-gradient(ellipse at top left, ${feat.bgColor}, transparent 60%)`,
-                }}
-              />
-
-              <div className="relative">
-                {/* Icon */}
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: feat.bgColor, border: `1px solid ${feat.borderColor}` }}
-                >
-                  <feat.icon className="w-6 h-6" style={{ color: feat.color }} />
-                </div>
-
-                {/* Title & desc */}
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
-                  {feat.title}
-                </h3>
-                <p className="text-sm text-white/55 leading-relaxed mb-4">{feat.desc}</p>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1.5">
-                  {feat.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-0.5 rounded-md text-xs font-medium border"
-                      style={{
-                        background: feat.bgColor,
-                        color: feat.color,
-                        borderColor: feat.borderColor,
-                      }}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110"
+                style={{ background: f.bgColor, border: `1px solid ${f.borderColor}` }}
+              >
+                <f.icon className="w-5 h-5" style={{ color: f.color }} />
+              </div>
+              <h3 className="font-bold text-base mb-2">{f.title}</h3>
+              <p className="text-sm text-white/50 leading-relaxed mb-4">{f.desc}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {f.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+                    style={{ background: f.bgColor, color: f.color, border: `1px solid ${f.borderColor}` }}
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
             </motion.div>
           ))}

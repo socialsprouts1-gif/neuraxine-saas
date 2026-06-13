@@ -2,81 +2,78 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Check, X, Zap, Building2, Star, ArrowRight } from "lucide-react";
+import { Check, X, Zap, Building2, Star, ArrowRight, Rocket } from "lucide-react";
 import Link from "next/link";
 
 const plans = [
   {
     name: "Starter",
     icon: Zap,
-    color: "#00FF87",
-    monthly: 29,
-    yearly: 19,
+    color: "#C6FF00",
+    monthly: 999,
+    yearly: 799,
     tagline: "Perfect for small businesses",
     popular: false,
     features: [
-      { text: "1 WhatsApp Number", included: true },
-      { text: "1,000 Messages/month", included: true },
-      { text: "AI Chatbot (GPT-4 powered)", included: true },
-      { text: "3 Automation Workflows", included: true },
-      { text: "Basic CRM (500 contacts)", included: true },
-      { text: "Campaign Broadcasts", included: true },
-      { text: "Analytics Dashboard", included: true },
+      { text: "1 Meta Ad Account", included: true },
+      { text: "5 Active Campaigns", included: true },
+      { text: "AI Campaign Builder", included: true },
+      { text: "Ad Preview Studio", included: true },
+      { text: "Basic Analytics", included: true },
+      { text: "AI Suggestions (10/month)", included: true },
       { text: "Email Support", included: true },
-      { text: "Bulk Campaigns", included: false },
-      { text: "White Label", included: false },
+      { text: "Custom Audiences", included: false },
+      { text: "A/B Testing", included: false },
+      { text: "White Label Reports", included: false },
       { text: "API Access", included: false },
-      { text: "Multi-Agent Support", included: false },
+      { text: "Priority Support", included: false },
     ],
-    cta: "Start Free Trial",
   },
   {
     name: "Growth",
-    icon: Star,
-    color: "#00D4FF",
-    monthly: 79,
-    yearly: 59,
-    tagline: "For growing businesses",
+    icon: Rocket,
+    color: "#C6FF00",
+    monthly: 2999,
+    yearly: 2399,
+    tagline: "For growing brands & freelancers",
     popular: true,
     features: [
-      { text: "3 WhatsApp Numbers", included: true },
-      { text: "10,000 Messages/month", included: true },
-      { text: "AI Chatbot (All Models)", included: true },
-      { text: "Unlimited Workflows", included: true },
-      { text: "Full CRM (10K contacts)", included: true },
-      { text: "Bulk Campaigns + Scheduling", included: true },
-      { text: "Advanced Analytics", included: true },
-      { text: "Priority Support", included: true },
-      { text: "AI Content Generator", included: true },
-      { text: "Appointment Booking", included: true },
-      { text: "White Label", included: false },
+      { text: "3 Meta Ad Accounts", included: true },
+      { text: "Unlimited Campaigns", included: true },
+      { text: "AI Campaign Builder", included: true },
+      { text: "Ad Preview Studio", included: true },
+      { text: "Advanced Analytics + ROAS", included: true },
+      { text: "Unlimited AI Suggestions", included: true },
+      { text: "Custom Audiences + Lookalikes", included: true },
+      { text: "A/B Testing", included: true },
+      { text: "WhatsApp CTA Integration", included: true },
+      { text: "White Label Reports", included: false },
       { text: "API Access", included: false },
+      { text: "Priority Support", included: true },
     ],
-    cta: "Start Free Trial",
   },
   {
     name: "Agency",
     icon: Building2,
     color: "#A855F7",
-    monthly: 199,
-    yearly: 149,
-    tagline: "For agencies & teams",
+    monthly: 7999,
+    yearly: 6399,
+    tagline: "For agencies managing multiple clients",
     popular: false,
     features: [
-      { text: "Unlimited WhatsApp Numbers", included: true },
-      { text: "Unlimited Messages", included: true },
-      { text: "All AI Models Included", included: true },
-      { text: "Unlimited Workflows", included: true },
-      { text: "Unlimited CRM Contacts", included: true },
-      { text: "Advanced Campaigns + A/B Test", included: true },
-      { text: "White Label Platform", included: true },
-      { text: "API Access + Webhooks", included: true },
-      { text: "Multi-Agent (20 seats)", included: true },
-      { text: "Client Workspaces", included: true },
-      { text: "Custom Domain", included: true },
+      { text: "Unlimited Ad Accounts", included: true },
+      { text: "Unlimited Campaigns", included: true },
+      { text: "AI Campaign Builder", included: true },
+      { text: "Ad Preview Studio", included: true },
+      { text: "Full Analytics Suite", included: true },
+      { text: "Unlimited AI Suggestions", included: true },
+      { text: "Custom Audiences + Lookalikes", included: true },
+      { text: "Advanced A/B Testing", included: true },
+      { text: "WhatsApp CTA Integration", included: true },
+      { text: "White Label Reports", included: true },
+      { text: "Full API Access", included: true },
       { text: "Dedicated Account Manager", included: true },
     ],
-    cta: "Start Free Trial",
   },
 ];
 
@@ -84,154 +81,126 @@ export default function Pricing() {
   const [yearly, setYearly] = useState(false);
 
   return (
-    <section id="pricing" className="relative py-28 overflow-hidden">
-      <div className="absolute inset-0 dot-pattern opacity-25" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+    <section id="pricing" className="py-28 relative overflow-hidden">
+      <div className="absolute inset-0 bg-mesh-green opacity-30" />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center space-y-4 mb-12"
+          className="text-center mb-16"
         >
-          <span className="section-badge">Pricing</span>
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Simple,{" "}
-            <span className="gradient-text-green">transparent pricing</span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#C6FF00]/10 border border-[#C6FF00]/20 text-[#C6FF00] text-sm font-medium mb-6">
+            <Star className="w-3.5 h-3.5" />
+            Simple, transparent pricing
+          </div>
+          <h2 className="text-4xl sm:text-5xl font-black mb-4">
+            Plans for every
+            <span className="gradient-text-green"> stage of growth</span>
           </h2>
-          <p className="text-lg text-white/60 max-w-xl mx-auto">
-            Start free for 14 days. No credit card required. Cancel anytime.
+          <p className="text-white/50 mb-8">
+            All plans include 14-day free trial. No credit card required.
           </p>
 
           {/* Toggle */}
-          <div className="flex items-center justify-center gap-4 mt-6">
-            <span className={`text-sm font-medium ${!yearly ? "text-white" : "text-white/50"}`}>Monthly</span>
+          <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl p-1">
             <button
-              onClick={() => setYearly(!yearly)}
-              className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${
-                yearly ? "bg-[#00FF87]" : "bg-white/20"
+              onClick={() => setYearly(false)}
+              className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+                !yearly ? "bg-white/10 text-white" : "text-white/50"
               }`}
             >
-              <span
-                className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform duration-200 ${
-                  yearly ? "left-7" : "left-1"
-                }`}
-              />
+              Monthly
             </button>
-            <span className={`text-sm font-medium flex items-center gap-2 ${yearly ? "text-white" : "text-white/50"}`}>
+            <button
+              onClick={() => setYearly(true)}
+              className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+                yearly ? "bg-white/10 text-white" : "text-white/50"
+              }`}
+            >
               Yearly
-              <span className="text-xs px-2 py-0.5 rounded-full bg-[#00FF87]/20 text-[#00FF87] font-semibold">
-                Save 30%
-              </span>
-            </span>
+              <span className="ml-2 text-[10px] bg-[#C6FF00]/20 text-[#C6FF00] px-2 py-0.5 rounded-full">Save 20%</span>
+            </button>
           </div>
         </motion.div>
 
-        {/* Plans */}
-        <div className="grid lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid md:grid-cols-3 gap-6">
           {plans.map((plan, i) => (
             <motion.div
               key={plan.name}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
+              transition={{ delay: i * 0.1 }}
               className={`relative glass-card p-7 flex flex-col ${
-                plan.popular ? "border-[#00D4FF]/40 shadow-[0_0_50px_rgba(0,212,255,0.1)]" : ""
+                plan.popular
+                  ? "border-[#C6FF00]/40 shadow-[0_0_60px_rgba(198,255,0,0.12)] scale-[1.02]"
+                  : "hover:border-white/20"
               }`}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="px-4 py-1 rounded-full text-xs font-bold bg-[#00D4FF] text-[#050508]">
-                    Most Popular
-                  </span>
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#C6FF00] text-[#050508] text-xs font-black">
+                  MOST POPULAR
                 </div>
               )}
 
-              {/* Header */}
               <div className="mb-6">
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: `${plan.color}15`, border: `1px solid ${plan.color}30` }}
-                >
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4`}
+                  style={{ background: `${plan.color}15`, border: `1px solid ${plan.color}25` }}>
                   <plan.icon className="w-5 h-5" style={{ color: plan.color }} />
                 </div>
-                <div className="text-xl font-bold">{plan.name}</div>
-                <div className="text-sm text-white/50 mt-0.5">{plan.tagline}</div>
+                <h3 className="text-xl font-black mb-1">{plan.name}</h3>
+                <p className="text-sm text-white/50">{plan.tagline}</p>
+              </div>
 
-                <div className="mt-4 flex items-end gap-1">
-                  <span className="text-4xl font-black" style={{ color: plan.color }}>
-                    ${yearly ? plan.yearly : plan.monthly}
-                  </span>
-                  <span className="text-white/50 mb-1 text-sm">/month</span>
+              <div className="mb-7">
+                <div className="flex items-end gap-1">
+                  <span className="text-4xl font-black">₹{yearly ? plan.yearly : plan.monthly}</span>
+                  <span className="text-white/40 mb-1">/month</span>
                 </div>
                 {yearly && (
-                  <div className="text-xs text-white/40 mt-1">
-                    Billed ${(plan.yearly * 12).toLocaleString()}/year
+                  <div className="text-xs text-[#C6FF00] mt-1">
+                    Save ₹{(plan.monthly - plan.yearly) * 12}/year
                   </div>
                 )}
               </div>
 
-              {/* Features */}
-              <ul className="space-y-2.5 flex-1 mb-6">
+              <div className="space-y-3 flex-1 mb-7">
                 {plan.features.map((f) => (
-                  <li key={f.text} className="flex items-center gap-2.5 text-sm">
+                  <div key={f.text} className="flex items-center gap-2.5 text-sm">
                     {f.included ? (
-                      <Check className="w-4 h-4 text-[#00FF87] flex-shrink-0" />
+                      <Check className="w-4 h-4 text-[#C6FF00] flex-shrink-0" />
                     ) : (
                       <X className="w-4 h-4 text-white/20 flex-shrink-0" />
                     )}
-                    <span className={f.included ? "text-white/80" : "text-white/30"}>
-                      {f.text}
-                    </span>
-                  </li>
+                    <span className={f.included ? "text-white/80" : "text-white/30"}>{f.text}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
 
-              {/* CTA */}
               <Link
                 href="/auth/register"
-                className={`flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 ${
+                className={`flex items-center justify-center gap-2 py-3 px-5 rounded-xl text-sm font-bold transition-all ${
                   plan.popular
-                    ? "btn-primary"
-                    : "btn-secondary"
+                    ? "bg-[#C6FF00] text-[#050508] hover:bg-[#b8f000] shadow-[0_0_30px_rgba(198,255,0,0.3)]"
+                    : "border border-white/15 text-white hover:bg-white/5"
                 }`}
-                style={
-                  !plan.popular
-                    ? { borderColor: `${plan.color}40`, color: plan.color }
-                    : {}
-                }
               >
-                {plan.cta}
+                Start Free Trial
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </motion.div>
           ))}
         </div>
 
-        {/* Enterprise CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="glass-card p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+          className="text-center text-sm text-white/40 mt-8"
         >
-          <div>
-            <div className="text-xl font-bold mb-1">Need Enterprise-grade?</div>
-            <div className="text-white/60">
-              Custom pricing for large teams, dedicated infrastructure, SLA guarantees, and tailored onboarding.
-            </div>
-          </div>
-          <a
-            href="#"
-            className="btn-secondary whitespace-nowrap"
-          >
-            Talk to Sales
-          </a>
-        </motion.div>
+          All prices in INR · GST extra · Cancel anytime · 14-day money-back guarantee
+        </motion.p>
       </div>
     </section>
   );

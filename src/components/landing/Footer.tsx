@@ -24,10 +24,10 @@ export default function Footer() {
           <div className="relative">
             <h3 className="text-3xl md:text-4xl font-bold mb-3">
               Ready to automate your{" "}
-              <span className="gradient-text-green">WhatsApp growth?</span>
+              <span className="gradient-text-green">Meta Ads performance?</span>
             </h3>
             <p className="text-white/60 mb-8 max-w-lg mx-auto">
-              Join 50,000+ businesses already using WhatsFlow AI to grow faster.
+              Join 10,000+ businesses using AdPilot AI to launch winning Meta ads.
               Start your 14-day free trial today.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
@@ -51,11 +51,11 @@ export default function Footer() {
                 <Zap className="w-4 h-4 text-[#050508]" />
               </div>
               <span className="font-bold text-lg">
-                WhatsFlow <span className="gradient-text-green">AI</span>
+                AdPilot <span className="gradient-text-green">AI</span>
               </span>
             </Link>
             <p className="text-sm text-white/50 leading-relaxed mb-6 max-w-xs">
-              The most powerful AI-powered WhatsApp automation platform for modern businesses.
+              The AI-native Meta Ads platform. Create, optimize, and launch campaigns with natural language.
             </p>
 
             {/* Newsletter */}
@@ -112,7 +112,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-white/8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-white/40">
-            © 2024 WhatsFlow AI. All rights reserved.
+            © 2024 AdPilot AI. All rights reserved.
           </p>
           <div className="flex gap-6">
             {["Privacy Policy", "Terms of Service", "Cookie Policy", "GDPR"].map((item) => (

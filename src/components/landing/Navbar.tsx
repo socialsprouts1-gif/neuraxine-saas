@@ -10,11 +10,11 @@ const navItems = [
     label: "Features",
     href: "#features",
     dropdown: [
-      { label: "AI Chatbot Builder", desc: "Train AI on your business data" },
-      { label: "Workflow Automation", desc: "Drag-and-drop flow builder" },
-      { label: "Bulk Campaigns", desc: "Broadcast to thousands instantly" },
-      { label: "CRM System", desc: "Built-in lead management" },
-      { label: "Analytics Dashboard", desc: "Real-time performance insights" },
+      { label: "AI Campaign Builder", desc: "Create campaigns with natural language" },
+      { label: "Meta Ads Integration", desc: "Connect your Meta Business account" },
+      { label: "Ad Preview Studio", desc: "Preview across all placements" },
+      { label: "AI Suggestions Engine", desc: "Smart copy, targeting & budget tips" },
+      { label: "Campaign Analytics", desc: "ROAS, CPL, CTR & more" },
     ],
   },
   { label: "Pricing", href: "/pricing" },
@@ -50,7 +50,7 @@ export default function Navbar() {
               <Zap className="w-4 h-4 text-[#050508]" />
             </div>
             <span className="font-bold text-lg">
-              WhatsFlow <span className="gradient-text-green">AI</span>
+              AdPilot <span className="gradient-text-green">AI</span>
             </span>
           </Link>
 

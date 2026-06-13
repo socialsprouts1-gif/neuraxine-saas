@@ -3,22 +3,22 @@
 import { motion } from "framer-motion";
 
 const integrations = [
-  { name: "WhatsApp", icon: "💬", color: "#25D366" },
-  { name: "OpenAI", icon: "🤖", color: "#00FF87" },
-  { name: "Shopify", icon: "🛍️", color: "#96BF48" },
-  { name: "Stripe", icon: "💳", color: "#635BFF" },
-  { name: "HubSpot", icon: "🔶", color: "#FF7A59" },
-  { name: "Zapier", icon: "⚡", color: "#FF4F00" },
-  { name: "Slack", icon: "💜", color: "#4A154B" },
-  { name: "Calendly", icon: "📅", color: "#006BFF" },
-  { name: "Google Sheets", icon: "📊", color: "#34A853" },
-  { name: "WooCommerce", icon: "🏪", color: "#7F54B3" },
-  { name: "Razorpay", icon: "💰", color: "#2D81F7" },
-  { name: "n8n", icon: "⚙️", color: "#EA4B71" },
-  { name: "Twilio", icon: "📱", color: "#F22F46" },
+  { name: "Meta Ads", icon: "📢", color: "#0668E1" },
+  { name: "Facebook Pages", icon: "👍", color: "#1877F2" },
+  { name: "Instagram", icon: "📸", color: "#E1306C" },
+  { name: "Meta Pixel", icon: "🔍", color: "#0668E1" },
+  { name: "WhatsApp Business", icon: "💬", color: "#25D366" },
+  { name: "GPT-4o", icon: "🤖", color: "#C6FF00" },
   { name: "Claude AI", icon: "🧠", color: "#A855F7" },
-  { name: "Meta API", icon: "🌐", color: "#0668E1" },
-  { name: "Gemini", icon: "✨", color: "#4285F4" },
+  { name: "Razorpay", icon: "💳", color: "#2D81F7" },
+  { name: "Google Analytics", icon: "📊", color: "#F4B400" },
+  { name: "Shopify", icon: "🛍️", color: "#96BF48" },
+  { name: "Zapier", icon: "⚡", color: "#FF4F00" },
+  { name: "Webhooks", icon: "🔗", color: "#C6FF00" },
+  { name: "Meta Business Suite", icon: "💼", color: "#0668E1" },
+  { name: "Canva", icon: "🎨", color: "#00C4CC" },
+  { name: "n8n", icon: "⚙️", color: "#EA4B71" },
+  { name: "Slack", icon: "💜", color: "#4A154B" },
 ];
 
 export default function Integrations() {

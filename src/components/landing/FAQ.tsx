@@ -6,36 +6,36 @@ import { ChevronDown } from "lucide-react";
 
 const faqs = [
   {
-    q: "Is WhatsApp Cloud API officially supported?",
-    a: "Yes. WhatsFlow AI uses the official Meta WhatsApp Cloud API, meaning your account is fully compliant and protected from being banned. We are a Meta Business Partner.",
+    q: "Do I need Meta Ads Manager experience to use AdPilot AI?",
+    a: "No experience needed. AdPilot AI converts natural language prompts into complete Meta ad campaigns. Just describe your goal and we handle the technical setup — objectives, targeting, ad sets, creatives, and publishing.",
   },
   {
-    q: "Can I use AI chatbots with my own data?",
-    a: "Absolutely. You can upload PDFs, documents, FAQs, and even connect your website URL to train the AI on your specific business data. The chatbot will answer questions using your knowledge base.",
+    q: "How does the Meta account connection work?",
+    a: "AdPilot uses Meta's official Marketing API via our MCP server integration. You authorize AdPilot via OAuth — we get read/write access to your ad accounts, pages, and pixels. Your credentials are encrypted and never shared.",
   },
   {
-    q: "Is coding knowledge required?",
-    a: "No. WhatsFlow AI is entirely no-code. Our visual drag-and-drop workflow builder lets you create complex automations without writing a single line of code.",
+    q: "Will ads be published without my approval?",
+    a: "Never. AdPilot always shows a review screen before publishing. You see the full campaign structure, ad copy, targeting, and budget. You must explicitly click 'Publish to Meta' to launch anything.",
   },
   {
-    q: "Can I send bulk campaigns to my contacts?",
-    a: "Yes. You can broadcast messages to your entire contact list or specific segments. WhatsApp-approved message templates ensure high deliverability and compliance.",
+    q: "What does the AI Suggestions feature do?",
+    a: "The AI Suggestions engine analyzes your campaign performance and gives actionable recommendations: better targeting, UGC creative ideas, hook copy, budget optimization, retargeting audiences, and landing page or WhatsApp CTA suggestions.",
   },
   {
-    q: "Is white-label support available?",
-    a: "Yes, on the Agency plan. You can fully white-label the platform with your own branding, custom domain, and create separate client workspaces — essentially reselling WhatsFlow AI under your brand.",
+    q: "Can I manage multiple client accounts as an agency?",
+    a: "Yes, the Agency plan (₹7,999/month) supports unlimited ad accounts, white-label reports, and client workspace management. Manage all your clients from one AdPilot dashboard.",
   },
   {
-    q: "Which AI models are supported?",
-    a: "We integrate with OpenAI (GPT-4o), Anthropic (Claude 3.5), and Google (Gemini 1.5 Pro). You can choose which model powers your chatbots and AI features.",
+    q: "Does AdPilot check Meta's ad policies?",
+    a: "Yes. Before every campaign review, AdPilot runs a policy check against Meta's advertising policies. If potential violations are detected, we flag them and suggest compliant alternatives before you publish.",
   },
   {
-    q: "What integrations are available?",
-    a: "We natively integrate with Shopify, WooCommerce, HubSpot, Stripe, Razorpay, Calendly, Google Sheets, Zapier, n8n, Slack, and many more. Our Zapier integration unlocks 6,000+ additional tools.",
+    q: "What ad formats and placements are supported?",
+    a: "AdPilot supports all major Meta placements: Facebook Feed, Instagram Feed, Instagram Stories, Instagram Reels, Facebook Stories, Messenger, and Audience Network. Ad preview shows how your ad looks on each placement.",
   },
   {
     q: "How does the free trial work?",
-    a: "You get full access to all features for 14 days — no credit card required. After the trial, choose the plan that fits your business. You'll never be charged without your consent.",
+    a: "You get full access to all features for 14 days — no credit card required. After the trial, choose the plan that fits your business. You'll never be charged without your consent. All prices in INR, GST extra.",
   },
   {
     q: "Can multiple agents handle the same WhatsApp account?",

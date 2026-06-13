@@ -6,57 +6,57 @@ import { Star, Quote } from "lucide-react";
 const testimonials = [
   {
     name: "Priya Sharma",
-    role: "Founder, StyleHouse India",
+    role: "Gym Owner, Pune",
     avatar: "P",
-    color: "#00FF87",
+    color: "#C6FF00",
     rating: 5,
-    text: "WhatsFlow AI transformed our Shopify store's customer service. We automated 90% of support queries and recovered 3x more abandoned carts. Revenue jumped 42% in the first month.",
-    metric: "+42% Revenue",
+    text: "AdPilot AI is insane. I described my gym campaign in one line and it built the entire thing — targeting, copy, budget, everything. ₹47 cost per lead, 32 leads in the first week. I've never had results like this.",
+    metric: "₹47 CPL",
   },
   {
-    name: "David Chen",
-    role: "Digital Marketing Agency, Singapore",
-    avatar: "D",
+    name: "Rahul Mehta",
+    role: "Digital Marketing Agency, Mumbai",
+    avatar: "R",
     color: "#00D4FF",
     rating: 5,
-    text: "As an agency, the white-label feature is gold. We onboarded 12 new clients in one month, each with their own branded WhatsApp automation. The ROI is incredible.",
-    metric: "12 New Clients",
+    text: "As an agency managing 15 clients, AdPilot saves me 3 hours per campaign. The AI builder generates what would take me 30 minutes in just 60 seconds. My clients see 4-6x ROAS consistently.",
+    metric: "4-6x ROAS",
   },
   {
-    name: "Marcus Johnson",
-    role: "Life Coach, Austin TX",
-    avatar: "M",
+    name: "Sunita Joshi",
+    role: "Dental Clinic Owner, Bangalore",
+    avatar: "S",
     color: "#A855F7",
     rating: 5,
-    text: "My discovery call bookings tripled after setting up the AI qualification bot. It handles 200+ conversations daily and only sends me the truly hot leads. Game changer.",
-    metric: "3x Bookings",
+    text: "I was paying a marketing agency ₹25,000/month for Meta ads. Now I use AdPilot at ₹2,999 and get better results. The AI suggestions alone saved me ₹8,000 in wasted spend last month.",
+    metric: "₹8K Saved",
   },
   {
-    name: "Aisha Okafor",
-    role: "Real Estate Broker, Lagos",
+    name: "Arjun Reddy",
+    role: "Real Estate Developer, Hyderabad",
     avatar: "A",
     color: "#F59E0B",
     rating: 5,
-    text: "We close deals faster now. The AI qualifies buyers, sends property matches, and schedules viewings automatically. Our team focuses on closing, not chasing leads.",
-    metric: "35% More Closings",
+    text: "₹320 cost per qualified property lead. That's unheard of in real estate Meta advertising. AdPilot's targeting suggestions (income-based, location pincode) are incredibly precise.",
+    metric: "₹320 per Lead",
   },
   {
-    name: "Carlos Rivera",
-    role: "Restaurant Chain Owner, Mexico",
-    avatar: "C",
-    color: "#EC4899",
-    rating: 5,
-    text: "WhatsFlow handles reservations, menu inquiries, and order updates across 8 locations. Response time went from 4 hours to 3 seconds. Customer satisfaction is at 98%.",
-    metric: "98% CSAT Score",
-  },
-  {
-    name: "Sophie Laurent",
-    role: "E-Learning Platform, Paris",
-    avatar: "S",
+    name: "Kavita Nair",
+    role: "Restaurant Owner, Bandra",
+    avatar: "K",
     color: "#00FF87",
     rating: 5,
-    text: "Student enrollment automation saved us 60% in marketing costs. The drip sequences keep learners engaged and the completion rate improved dramatically.",
-    metric: "60% Cost Savings",
+    text: "Set up a weekend dinner promotion campaign in 3 minutes — wrote one sentence, AdPilot built the entire ad. We were fully booked that Saturday. The ad preview feature is chef's kiss.",
+    metric: "Fully Booked",
+  },
+  {
+    name: "Vikram Singh",
+    role: "EdTech Founder, Delhi",
+    avatar: "V",
+    color: "#C6FF00",
+    rating: 5,
+    text: "Running 8 campaigns simultaneously for our courses. The AI score feature instantly shows which campaigns need attention. Avg CPL dropped from ₹380 to ₹140 in 2 weeks.",
+    metric: "CPL ₹380→₹140",
   },
 ];
 
@@ -80,7 +80,7 @@ export default function Testimonials() {
           <span className="section-badge">Testimonials</span>
           <h2 className="text-4xl md:text-5xl font-bold">
             Businesses{" "}
-            <span className="gradient-text-green">love WhatsFlow AI</span>
+            <span className="gradient-text-green">love AdPilot AI</span>
           </h2>
           <p className="text-lg text-white/60 max-w-xl mx-auto">
             Real results from real businesses. Join 50,000+ companies automating their growth.

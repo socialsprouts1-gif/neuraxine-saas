@@ -5,57 +5,45 @@ import { usePathname } from "next/navigation";
 import {
   Zap,
   LayoutDashboard,
-  Bot,
-  GitBranch,
-  Megaphone,
-  Users,
+  Target,
+  Wand2,
+  Eye,
+  Plug2,
   BarChart3,
-  ShoppingCart,
   Settings,
   HelpCircle,
-  Bell,
   CreditCard,
-  Plug,
   ChevronLeft,
-  MessageCircle,
-  Layers,
+  Sparkles,
 } from "lucide-react";
 import { useState } from "react";
 
 const navSections = [
   {
-    label: "Main",
+    label: "Overview",
     items: [
       { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-      { icon: MessageCircle, label: "Live Chat", href: "/dashboard/chat" },
-      { icon: Bot, label: "Chatbots", href: "/dashboard/chatbots" },
-      { icon: GitBranch, label: "Workflows", href: "/dashboard/workflows" },
     ],
   },
   {
-    label: "Marketing",
+    label: "Meta Ads",
     items: [
-      { icon: Megaphone, label: "Campaigns", href: "/dashboard/campaigns" },
-      { icon: Layers, label: "Templates", href: "/dashboard/templates" },
+      { icon: Wand2, label: "AI Builder", href: "/dashboard/ad-builder" },
+      { icon: Target, label: "Campaigns", href: "/dashboard/campaigns" },
+      { icon: Eye, label: "Ad Preview", href: "/dashboard/ad-preview" },
+      { icon: Sparkles, label: "AI Suggestions", href: "/dashboard/ai-suggestions" },
     ],
   },
   {
-    label: "CRM",
-    items: [
-      { icon: Users, label: "Contacts & CRM", href: "/dashboard/crm" },
-      { icon: ShoppingCart, label: "Commerce", href: "/dashboard/commerce" },
-    ],
-  },
-  {
-    label: "Insights",
+    label: "Analytics",
     items: [
       { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
     ],
   },
   {
-    label: "Config",
+    label: "Account",
     items: [
-      { icon: Plug, label: "Integrations", href: "/dashboard/integrations" },
+      { icon: Plug2, label: "Connect Meta", href: "/dashboard/meta-connect" },
       { icon: CreditCard, label: "Billing", href: "/dashboard/billing" },
       { icon: Settings, label: "Settings", href: "/dashboard/settings" },
     ],
@@ -74,12 +62,12 @@ export default function Sidebar() {
     >
       {/* Logo */}
       <div className={`flex items-center gap-2.5 px-4 h-16 border-b border-white/8 flex-shrink-0 ${collapsed ? "justify-center" : ""}`}>
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00FF87] to-[#00D4FF] flex items-center justify-center shadow-[0_0_16px_rgba(0,255,135,0.4)] flex-shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C6FF00] to-[#00FF87] flex items-center justify-center shadow-[0_0_16px_rgba(198,255,0,0.4)] flex-shrink-0">
           <Zap className="w-4 h-4 text-[#050508]" />
         </div>
         {!collapsed && (
           <span className="font-bold text-base whitespace-nowrap">
-            WhatsFlow <span className="gradient-text-green">AI</span>
+            AdPilot <span className="gradient-text-green">AI</span>
           </span>
         )}
       </div>
@@ -104,15 +92,15 @@ export default function Sidebar() {
                       collapsed ? "justify-center" : ""
                     } ${
                       isActive
-                        ? "bg-[#00FF87]/10 text-[#00FF87] border border-[#00FF87]/20"
+                        ? "bg-[#C6FF00]/10 text-[#C6FF00] border border-[#C6FF00]/20"
                         : "text-white/60 hover:text-white hover:bg-white/5"
                     }`}
                     title={collapsed ? item.label : undefined}
                   >
-                    <item.icon className={`w-4 h-4 flex-shrink-0 ${isActive ? "text-[#00FF87]" : ""}`} />
+                    <item.icon className={`w-4 h-4 flex-shrink-0 ${isActive ? "text-[#C6FF00]" : ""}`} />
                     {!collapsed && item.label}
                     {!collapsed && isActive && (
-                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#00FF87]" />
+                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#C6FF00]" />
                     )}
                   </Link>
                 );
@@ -136,7 +124,7 @@ export default function Sidebar() {
 
         {/* User avatar */}
         <div className={`flex items-center gap-2.5 px-3 py-2 rounded-xl bg-white/3 border border-white/8 ${collapsed ? "justify-center" : ""}`}>
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#00FF87]/30 to-[#00D4FF]/30 flex items-center justify-center text-xs font-bold flex-shrink-0">
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#C6FF00]/30 to-[#00FF87]/30 flex items-center justify-center text-xs font-bold flex-shrink-0">
             A
           </div>
           {!collapsed && (
@@ -151,7 +139,7 @@ export default function Sidebar() {
       {/* Collapse button */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-[#141420] border border-white/15 flex items-center justify-center hover:border-[#00FF87]/30 transition-colors"
+        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-[#141420] border border-white/15 flex items-center justify-center hover:border-[#C6FF00]/30 transition-colors"
       >
         <ChevronLeft className={`w-3 h-3 text-white/60 transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`} />
       </button>
