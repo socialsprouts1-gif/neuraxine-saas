@@ -3,23 +3,23 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap, Menu, X, ChevronDown } from "lucide-react";
+import { Phone, Menu, X, ChevronDown } from "lucide-react";
 
 const navItems = [
   {
     label: "Features",
     href: "#features",
     dropdown: [
-      { label: "AI Chatbot Builder", desc: "Train AI on your business data" },
-      { label: "Workflow Automation", desc: "Drag-and-drop flow builder" },
-      { label: "Bulk Campaigns", desc: "Broadcast to thousands instantly" },
-      { label: "CRM System", desc: "Built-in lead management" },
-      { label: "Analytics Dashboard", desc: "Real-time performance insights" },
+      { label: "AI Voice Agents", desc: "Build agents for inbound & outbound calls" },
+      { label: "Outbound Campaigns", desc: "Automated multi-contact dialing at scale" },
+      { label: "Inbound Routing", desc: "AI handles your incoming calls 24/7" },
+      { label: "Post-Call AI", desc: "Gemini-powered summaries & data extraction" },
+      { label: "Analytics Dashboard", desc: "Real-time call performance insights" },
     ],
   },
   { label: "Pricing", href: "/pricing" },
   { label: "Use Cases", href: "#use-cases" },
-  { label: "Integrations", href: "#integrations" },
+  { label: "Compliance", href: "#compliance" },
   { label: "Docs", href: "#" },
 ];
 
@@ -47,10 +47,10 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00FF87] to-[#00D4FF] flex items-center justify-center shadow-[0_0_20px_rgba(0,255,135,0.5)] group-hover:shadow-[0_0_30px_rgba(0,255,135,0.7)] transition-shadow">
-              <Zap className="w-4 h-4 text-[#050508]" />
+              <Phone className="w-4 h-4 text-[#050508]" />
             </div>
             <span className="font-bold text-lg">
-              WhatsFlow <span className="gradient-text-green">AI</span>
+              Neuraxine <span className="gradient-text-green">AI</span>
             </span>
           </Link>
 

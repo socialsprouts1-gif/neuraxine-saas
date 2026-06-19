@@ -1,252 +1,166 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Plus,
-  Send,
-  Clock,
-  CheckCircle,
-  PauseCircle,
-  BarChart3,
-  Users,
-  Eye,
-  MousePointer,
-  MoreHorizontal,
   Megaphone,
-  Filter,
+  Play,
+  Pause,
+  CheckCircle2,
+  AlertTriangle,
+  Clock,
+  Users,
+  Phone,
+  Bot,
+  Lock,
+  Info,
 } from "lucide-react";
-import Header from "@/components/dashboard/Header";
+import Link from "next/link";
 
 const campaigns = [
   {
-    id: 1,
-    name: "Summer Sale 2024",
-    status: "Live",
-    type: "Broadcast",
-    sent: 12450,
-    delivered: 12230,
-    opened: 9180,
-    clicked: 3420,
-    created: "May 15, 2026",
-    color: "#00FF87",
-  },
-  {
-    id: 2,
-    name: "Welcome Series — New Users",
-    status: "Active",
-    type: "Drip",
-    sent: 4820,
-    delivered: 4750,
-    opened: 3600,
-    clicked: 1240,
-    created: "May 10, 2026",
-    color: "#00D4FF",
-  },
-  {
-    id: 3,
-    name: "Abandoned Cart Recovery",
-    status: "Active",
-    type: "Trigger",
-    sent: 2310,
-    delivered: 2290,
-    opened: 1890,
-    clicked: 920,
-    created: "May 8, 2026",
-    color: "#A855F7",
-  },
-  {
-    id: 4,
-    name: "Flash Deal — 24 Hours",
-    status: "Scheduled",
-    type: "Broadcast",
-    sent: 0,
-    delivered: 0,
-    opened: 0,
-    clicked: 0,
-    created: "May 20, 2026",
-    color: "#F59E0B",
-  },
-  {
-    id: 5,
-    name: "Re-engagement Campaign",
-    status: "Paused",
-    type: "Drip",
-    sent: 8900,
-    delivered: 8740,
-    opened: 5200,
-    clicked: 1800,
-    created: "Apr 28, 2026",
-    color: "#EC4899",
+    id: "1",
+    name: "Q1 Sales Blitz",
+    agent: "Priya - Sales Agent",
+    list: "Q1 Leads",
+    category: "transactional",
+    status: "done",
+    dltApproved: true,
+    numberSeries: "140",
+    total: 4,
+    completed: 3,
+    failed: 1,
+    connectRate: "75%",
+    avgDuration: "3m 6s",
+    createdAt: "Jun 15, 2026",
   },
 ];
 
-const statusStyle: Record<string, { bg: string; color: string; icon: typeof CheckCircle }> = {
-  Live: { bg: "rgba(0,255,135,0.1)", color: "#00FF87", icon: CheckCircle },
-  Active: { bg: "rgba(0,212,255,0.1)", color: "#00D4FF", icon: CheckCircle },
-  Scheduled: { bg: "rgba(245,158,11,0.1)", color: "#F59E0B", icon: Clock },
-  Paused: { bg: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)", icon: PauseCircle },
+const statusStyle: Record<string, { icon: React.ElementType; color: string; bg: string; label: string }> = {
+  draft: { icon: Clock, color: "text-white/50", bg: "bg-white/8", label: "Draft" },
+  running: { icon: Play, color: "text-[#00FF87]", bg: "bg-[#00FF87]/10", label: "Running" },
+  paused: { icon: Pause, color: "text-[#FF6B35]", bg: "bg-[#FF6B35]/10", label: "Paused" },
+  done: { icon: CheckCircle2, color: "text-[#00D4FF]", bg: "bg-[#00D4FF]/10", label: "Completed" },
+  failed: { icon: AlertTriangle, color: "text-[#FF3366]", bg: "bg-[#FF3366]/10", label: "Failed" },
 };
 
-function CampaignStat({ icon: Icon, label, value, color }: { icon: typeof Send; label: string; value: string | number; color: string }) {
-  return (
-    <div className="text-center">
-      <div className="flex justify-center mb-1">
-        <Icon className="w-3.5 h-3.5" style={{ color }} />
-      </div>
-      <div className="text-sm font-bold">{typeof value === "number" ? value.toLocaleString() : value}</div>
-      <div className="text-[10px] text-white/40">{label}</div>
-    </div>
-  );
-}
+const categoryColor: Record<string, string> = {
+  promotional: "text-[#FF6B35] border-[#FF6B35]/30 bg-[#FF6B35]/5",
+  transactional: "text-[#00D4FF] border-[#00D4FF]/30 bg-[#00D4FF]/5",
+  service: "text-[#7B2FFF] border-[#7B2FFF]/30 bg-[#7B2FFF]/5",
+};
 
 export default function CampaignsPage() {
+  const [showDltWarning, setShowDltWarning] = useState(false);
+
   return (
-    <div className="bg-[#050508] min-h-full">
-      <Header title="Campaigns" subtitle="Create and manage WhatsApp broadcast campaigns" />
-
-      <div className="p-6 space-y-6">
-        {/* Top stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { label: "Total Campaigns", value: "48", icon: Megaphone, color: "#00FF87" },
-            { label: "Messages Sent", value: "248K", icon: Send, color: "#00D4FF" },
-            { label: "Avg Open Rate", value: "74.2%", icon: Eye, color: "#A855F7" },
-            { label: "Avg Click Rate", value: "28.5%", icon: MousePointer, color: "#F59E0B" },
-          ].map((s, i) => (
-            <motion.div
-              key={s.label}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className="glass-card p-4 flex items-center gap-4"
-            >
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: `${s.color}15`, border: `1px solid ${s.color}25` }}
-              >
-                <s.icon className="w-5 h-5" style={{ color: s.color }} />
-              </div>
-              <div>
-                <div className="text-xl font-black" style={{ color: s.color }}>{s.value}</div>
-                <div className="text-xs text-white/50">{s.label}</div>
-              </div>
-            </motion.div>
-          ))}
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Campaigns</h1>
+          <p className="text-white/50 text-sm mt-0.5">Manage outbound calling campaigns.</p>
         </div>
+        <Link
+          href="/dashboard/campaigns/new"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#00FF87] text-[#050508] text-sm font-semibold hover:bg-[#00FF87]/90 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          New Campaign
+        </Link>
+      </div>
 
-        {/* Toolbar */}
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex-1 flex gap-2">
-            {["All", "Live", "Scheduled", "Drip", "Paused"].map((tab) => (
-              <button
-                key={tab}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  tab === "All"
-                    ? "bg-[#00FF87]/10 text-[#00FF87] border border-[#00FF87]/20"
-                    : "text-white/50 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
+      {/* TRAI Compliance Banner */}
+      <div className="flex items-start gap-3 p-4 rounded-xl bg-[#FF6B35]/8 border border-[#FF6B35]/20">
+        <Info className="w-5 h-5 text-[#FF6B35] flex-shrink-0 mt-0.5" />
+        <div className="text-sm">
+          <span className="font-semibold text-[#FF6B35]">India Calling Compliance (TRAI/DLT):</span>
+          <span className="text-white/60 ml-2">
+            Promotional campaigns require a 140-series number with approved DLT registration. Transactional campaigns use 160/1600-series. The system enforces this automatically — campaigns cannot launch without DLT approval.
+          </span>
+        </div>
+      </div>
+
+      {campaigns.length === 0 ? (
+        <div className="glass-card flex flex-col items-center justify-center py-20 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#00FF87]/10 flex items-center justify-center mb-4">
+            <Megaphone className="w-8 h-8 text-[#00FF87]" />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white/70 hover:border-white/20 transition-colors">
-            <Filter className="w-4 h-4" />
-            Filter
-          </button>
-          <button className="btn-primary text-sm py-2">
-            <Plus className="w-4 h-4" />
-            New Campaign
-          </button>
+          <h2 className="text-lg font-semibold mb-2">No campaigns yet</h2>
+          <p className="text-white/40 text-sm mb-6 max-w-sm">Create your first outbound campaign. Pick an agent, upload contacts, set a schedule, and launch.</p>
+          <Link href="/dashboard/campaigns/new" className="btn-primary text-sm px-5 py-2.5 flex items-center gap-2">
+            <Plus className="w-4 h-4" /> Create Campaign
+          </Link>
         </div>
-
-        {/* Campaigns list */}
-        <div className="space-y-3">
-          {campaigns.map((c, i) => {
-            const style = statusStyle[c.status];
-            const StatusIcon = style.icon;
-            const openRate = c.sent > 0 ? Math.round((c.opened / c.sent) * 100) : 0;
-            const clickRate = c.sent > 0 ? Math.round((c.clicked / c.sent) * 100) : 0;
-
+      ) : (
+        <div className="space-y-4">
+          {campaigns.map((campaign, i) => {
+            const s = statusStyle[campaign.status];
+            const progress = campaign.total > 0 ? Math.round((campaign.completed / campaign.total) * 100) : 0;
             return (
               <motion.div
-                key={c.id}
-                initial={{ opacity: 0, y: 16 }}
+                key={campaign.id}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + i * 0.08 }}
-                className="glass-card p-5 hover:border-white/20 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group"
+                transition={{ delay: i * 0.06 }}
+                className="glass-card p-5"
               >
-                <div className="flex items-center gap-5">
-                  {/* Color indicator */}
-                  <div
-                    className="w-1 h-12 rounded-full flex-shrink-0"
-                    style={{ background: c.color }}
-                  />
-
-                  {/* Campaign info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="font-semibold group-hover:text-[#00FF87] transition-colors">
-                          {c.name}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs text-white/40">{c.type}</span>
-                          <span className="text-white/20">·</span>
-                          <span className="text-xs text-white/40">{c.created}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <span
-                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
-                          style={{ background: style.bg, color: style.color, border: `1px solid ${style.color}30` }}
-                        >
-                          <StatusIcon className="w-3 h-3" />
-                          {c.status}
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                      <h3 className="font-semibold text-base">{campaign.name}</h3>
+                      <span className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full border ${categoryColor[campaign.category]}`}>
+                        {campaign.category}
+                      </span>
+                      {!campaign.dltApproved && (
+                        <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FF3366]/10 border border-[#FF3366]/30 text-[#FF3366]">
+                          <Lock className="w-2.5 h-2.5" /> DLT Pending
                         </span>
-                        <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-white/10">
-                          <MoreHorizontal className="w-4 h-4 text-white/60" />
-                        </button>
-                      </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-1.5 text-xs text-white/40">
+                      <span className="flex items-center gap-1"><Bot className="w-3 h-3" /> {campaign.agent}</span>
+                      <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {campaign.list}</span>
+                      <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {campaign.numberSeries}-series</span>
                     </div>
                   </div>
-
-                  {/* Stats */}
-                  {c.sent > 0 && (
-                    <div className="hidden md:grid grid-cols-4 gap-6 flex-shrink-0">
-                      <CampaignStat icon={Send} label="Sent" value={c.sent} color={c.color} />
-                      <CampaignStat icon={CheckCircle} label="Delivered" value={c.delivered} color={c.color} />
-                      <CampaignStat icon={Eye} label={`${openRate}% Open`} value={c.opened} color={c.color} />
-                      <CampaignStat icon={MousePointer} label={`${clickRate}% Click`} value={c.clicked} color={c.color} />
-                    </div>
-                  )}
-                  {c.sent === 0 && (
-                    <div className="hidden md:flex items-center px-6">
-                      <span className="text-sm text-white/30 italic">Awaiting send time...</span>
-                    </div>
-                  )}
+                  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.color}`}>
+                    <s.icon className="w-3.5 h-3.5" />
+                    {s.label}
+                  </div>
                 </div>
 
-                {/* Progress bar */}
-                {c.sent > 0 && (
-                  <div className="mt-4 ml-5">
-                    <div className="flex items-center justify-between text-xs text-white/40 mb-1.5">
-                      <span>Delivery rate</span>
-                      <span>{Math.round((c.delivered / c.sent) * 100)}%</span>
-                    </div>
-                    <div className="h-1 bg-white/8 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-700"
-                        style={{ width: `${(c.delivered / c.sent) * 100}%`, background: c.color }}
-                      />
-                    </div>
+                {/* Progress */}
+                <div className="mb-4">
+                  <div className="flex justify-between text-xs text-white/40 mb-1.5">
+                    <span>{campaign.completed} / {campaign.total} calls</span>
+                    <span>{progress}%</span>
                   </div>
-                )}
+                  <div className="h-1.5 rounded-full bg-white/8">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-[#00FF87] to-[#00D4FF]"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { label: "Connect Rate", value: campaign.connectRate },
+                    { label: "Avg Duration", value: campaign.avgDuration },
+                    { label: "Failed", value: campaign.failed },
+                  ].map((stat) => (
+                    <div key={stat.label} className="rounded-xl bg-white/4 p-3 text-center">
+                      <div className="font-semibold text-sm">{stat.value}</div>
+                      <div className="text-white/40 text-[10px] mt-0.5">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
               </motion.div>
             );
           })}
         </div>
-      </div>
+      )}
     </div>
   );
 }

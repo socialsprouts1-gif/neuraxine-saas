@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Zap, Share2, Link2, GitFork, PlaySquare, ArrowRight } from "lucide-react";
+import { Phone, Share2, Link2, GitFork, PlaySquare, ArrowRight } from "lucide-react";
 
 const footerLinks = {
   Product: ["Features", "Pricing", "Integrations", "Changelog", "Roadmap", "Status"],
@@ -27,7 +27,7 @@ export default function Footer() {
               <span className="gradient-text-green">WhatsApp growth?</span>
             </h3>
             <p className="text-white/60 mb-8 max-w-lg mx-auto">
-              Join 50,000+ businesses already using WhatsFlow AI to grow faster.
+              Join 50,000+ businesses already using Neuraxine AI to grow faster.
               Start your 14-day free trial today.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
@@ -48,7 +48,7 @@ export default function Footer() {
           <div className="col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4 group">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00FF87] to-[#00D4FF] flex items-center justify-center shadow-[0_0_20px_rgba(0,255,135,0.4)]">
-                <Zap className="w-4 h-4 text-[#050508]" />
+                <Phone className="w-4 h-4 text-[#050508]" />
               </div>
               <span className="font-bold text-lg">
                 WhatsFlow <span className="gradient-text-green">AI</span>
@@ -112,7 +112,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-white/8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-white/40">
-            © 2024 WhatsFlow AI. All rights reserved.
+            © 2024 Neuraxine AI. All rights reserved.
           </p>
           <div className="flex gap-6">
             {["Privacy Policy", "Terms of Service", "Cookie Policy", "GDPR"].map((item) => (

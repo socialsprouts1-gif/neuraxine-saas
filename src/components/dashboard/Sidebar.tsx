@@ -3,22 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Zap,
+  Phone,
   LayoutDashboard,
   Bot,
-  GitBranch,
   Megaphone,
   Users,
   BarChart3,
-  ShoppingCart,
   Settings,
-  HelpCircle,
-  Bell,
-  CreditCard,
-  Plug,
+  Zap,
   ChevronLeft,
-  MessageCircle,
-  Layers,
+  PhoneCall,
+  Webhook,
+  CreditCard,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -27,23 +23,15 @@ const navSections = [
     label: "Main",
     items: [
       { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-      { icon: MessageCircle, label: "Live Chat", href: "/dashboard/chat" },
-      { icon: Bot, label: "Chatbots", href: "/dashboard/chatbots" },
-      { icon: GitBranch, label: "Workflows", href: "/dashboard/workflows" },
+      { icon: Bot, label: "Agents", href: "/dashboard/agents" },
+      { icon: PhoneCall, label: "Calls", href: "/dashboard/calls" },
     ],
   },
   {
-    label: "Marketing",
+    label: "Outbound",
     items: [
       { icon: Megaphone, label: "Campaigns", href: "/dashboard/campaigns" },
-      { icon: Layers, label: "Templates", href: "/dashboard/templates" },
-    ],
-  },
-  {
-    label: "CRM",
-    items: [
-      { icon: Users, label: "Contacts & CRM", href: "/dashboard/crm" },
-      { icon: ShoppingCart, label: "Commerce", href: "/dashboard/commerce" },
+      { icon: Users, label: "Contacts", href: "/dashboard/contacts" },
     ],
   },
   {
@@ -55,8 +43,8 @@ const navSections = [
   {
     label: "Config",
     items: [
-      { icon: Plug, label: "Integrations", href: "/dashboard/integrations" },
-      { icon: CreditCard, label: "Billing", href: "/dashboard/billing" },
+      { icon: Webhook, label: "Automations", href: "/dashboard/automations" },
+      { icon: CreditCard, label: "Billing", href: "/dashboard/settings/billing" },
       { icon: Settings, label: "Settings", href: "/dashboard/settings" },
     ],
   },
@@ -65,6 +53,9 @@ const navSections = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+
+  const isActive = (href: string) =>
+    href === "/dashboard" ? pathname === href : pathname.startsWith(href);
 
   return (
     <aside
@@ -75,11 +66,11 @@ export default function Sidebar() {
       {/* Logo */}
       <div className={`flex items-center gap-2.5 px-4 h-16 border-b border-white/8 flex-shrink-0 ${collapsed ? "justify-center" : ""}`}>
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00FF87] to-[#00D4FF] flex items-center justify-center shadow-[0_0_16px_rgba(0,255,135,0.4)] flex-shrink-0">
-          <Zap className="w-4 h-4 text-[#050508]" />
+          <Phone className="w-4 h-4 text-[#050508]" />
         </div>
         {!collapsed && (
           <span className="font-bold text-base whitespace-nowrap">
-            WhatsFlow <span className="gradient-text-green">AI</span>
+            Neuraxine <span className="gradient-text-green">AI</span>
           </span>
         )}
       </div>
@@ -95,7 +86,7 @@ export default function Sidebar() {
             )}
             <div className="space-y-0.5">
               {section.items.map((item) => {
-                const isActive = pathname === item.href;
+                const active = isActive(item.href);
                 return (
                   <Link
                     key={item.href}
@@ -103,15 +94,15 @@ export default function Sidebar() {
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                       collapsed ? "justify-center" : ""
                     } ${
-                      isActive
+                      active
                         ? "bg-[#00FF87]/10 text-[#00FF87] border border-[#00FF87]/20"
                         : "text-white/60 hover:text-white hover:bg-white/5"
                     }`}
                     title={collapsed ? item.label : undefined}
                   >
-                    <item.icon className={`w-4 h-4 flex-shrink-0 ${isActive ? "text-[#00FF87]" : ""}`} />
+                    <item.icon className={`w-4 h-4 flex-shrink-0 ${active ? "text-[#00FF87]" : ""}`} />
                     {!collapsed && item.label}
-                    {!collapsed && isActive && (
+                    {!collapsed && active && (
                       <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#00FF87]" />
                     )}
                   </Link>
@@ -122,36 +113,25 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Bottom */}
-      <div className="border-t border-white/8 p-3 space-y-1 flex-shrink-0">
-        <Link
-          href="#"
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-all ${
-            collapsed ? "justify-center" : ""
-          }`}
-        >
-          <HelpCircle className="w-4 h-4 flex-shrink-0" />
-          {!collapsed && "Help & Support"}
-        </Link>
-
-        {/* User avatar */}
+      {/* Bottom user area */}
+      <div className="border-t border-white/8 p-3 flex-shrink-0">
         <div className={`flex items-center gap-2.5 px-3 py-2 rounded-xl bg-white/3 border border-white/8 ${collapsed ? "justify-center" : ""}`}>
           <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#00FF87]/30 to-[#00D4FF]/30 flex items-center justify-center text-xs font-bold flex-shrink-0">
             A
           </div>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <div className="text-xs font-semibold truncate">Alex Johnson</div>
+              <div className="text-xs font-semibold truncate">Acme Corp</div>
               <div className="text-[10px] text-white/40">Growth Plan</div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Collapse button */}
+      {/* Collapse toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-[#141420] border border-white/15 flex items-center justify-center hover:border-[#00FF87]/30 transition-colors"
+        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-[#141420] border border-white/15 flex items-center justify-center hover:border-[#00FF87]/30 transition-colors z-10"
       >
         <ChevronLeft className={`w-3 h-3 text-white/60 transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`} />
       </button>
