@@ -1,8 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4 — single import pulls in preflight (base reset), theme and
+   utilities. The legacy v3 `@tailwind base/components/utilities` directives do
+   NOT emit preflight under v4, which left the app without a CSS reset. */
+@import "tailwindcss";
+
+/* Load the existing JS config (v4 no longer auto-detects tailwind.config.ts). */
+@config "../../tailwind.config.ts";
 
 :root {
   --brand-green: #00FF87;
