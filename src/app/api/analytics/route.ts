@@ -1,4 +1,4 @@
-import { db, listCampaigns, listContacts, listRules } from "@/lib/store";
+import { db, ensureLoaded, listCampaigns, listContacts, listRules } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
@@ -6,7 +6,8 @@ export const dynamic = "force-dynamic";
  * Aggregate analytics derived from the live store: message volume, delivery
  * funnel, contact growth, top automation rules and a daily trend series.
  */
-export function GET(): Response {
+export async function GET(): Promise<Response> {
+  await ensureLoaded();
   const database = db();
   const messages = database.messages;
   const campaigns = listCampaigns();

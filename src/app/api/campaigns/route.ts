@@ -1,9 +1,10 @@
 import { runCampaign } from "@/lib/automation";
-import { createCampaign, listCampaigns } from "@/lib/store";
+import { createCampaign, ensureLoaded, listCampaigns, persist } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
-export function GET(): Response {
+export async function GET(): Promise<Response> {
+  await ensureLoaded();
   return Response.json({ campaigns: listCampaigns() });
 }
 
@@ -12,6 +13,7 @@ export function GET(): Response {
  * is saved as a draft (or scheduled, if `scheduledAt` is given).
  */
 export async function POST(request: Request): Promise<Response> {
+  await ensureLoaded();
   let body: {
     name?: string;
     templateName?: string;
@@ -39,6 +41,8 @@ export async function POST(request: Request): Promise<Response> {
 
   if (body.send) {
     campaign = await runCampaign(campaign);
+  } else {
+    await persist();
   }
 
   return Response.json({ ok: true, campaign }, { status: 201 });

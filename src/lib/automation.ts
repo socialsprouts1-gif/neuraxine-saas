@@ -17,12 +17,14 @@ import { isWhatsAppConfigured, sendTemplate, sendText } from "@/lib/whatsapp";
 import {
   addMessage,
   db,
+  ensureLoaded,
   getConversationForContact,
   getSettings,
   listFlows,
   listRules,
   logActivity,
   newId,
+  persist,
   updateCampaign,
   upsertContactByPhone,
   type Campaign,
@@ -102,6 +104,7 @@ export async function processInbound(
   text: string,
   name?: string,
 ): Promise<{ contact: Contact; reply?: Message }> {
+  await ensureLoaded();
   const isNew = !db().contacts.some((c) => c.phone === phone);
   const contact = upsertContactByPhone(phone, name);
   const conv = getConversationForContact(contact.id);
@@ -139,6 +142,7 @@ export async function processInbound(
     }
   }
 
+  await persist();
   return { contact, reply };
 }
 
@@ -184,6 +188,7 @@ function enrollFlows(contact: Contact, text: string, isNewContact: boolean): voi
  * cron route (Vercel Cron) or on-demand. Returns the number of jobs run.
  */
 export async function processDueJobs(): Promise<number> {
+  await ensureLoaded();
   const now = Date.now();
   const due = db().jobs.filter(
     (j) => j.status === "pending" && new Date(j.runAt).getTime() <= now,
@@ -203,6 +208,7 @@ export async function processDueJobs(): Promise<number> {
     if (flow && job.stepIndex === flow.steps.length - 1) flow.completedCount += 1;
   }
 
+  if (due.length) await persist();
   return due.length;
 }
 
@@ -215,6 +221,7 @@ export async function processDueJobs(): Promise<number> {
  * contacts when no tag). Updates the campaign's stats as it goes.
  */
 export async function runCampaign(campaign: Campaign): Promise<Campaign> {
+  await ensureLoaded();
   const audience = campaign.audienceTag
     ? db().contacts.filter((c) => c.tags.includes(campaign.audienceTag!))
     : db().contacts;
@@ -247,5 +254,6 @@ export async function runCampaign(campaign: Campaign): Promise<Campaign> {
     stats: { sent, delivered, read, failed, clicked },
   })!;
   logActivity("campaign", `Campaign “${campaign.name}” sent to ${sent} contacts`);
+  await persist();
   return updated;
 }

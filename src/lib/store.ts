@@ -13,6 +13,7 @@
  */
 
 import { randomUUID } from "node:crypto";
+import { loadSnapshot, persistenceEnabled, saveSnapshot } from "@/lib/persistence";
 
 /* -------------------------------------------------------------------------- */
 /*  Types                                                                     */
@@ -354,6 +355,47 @@ export function db(): DB {
 /** Test/util: wipe and reseed. */
 export function resetDb(): void {
   globalForDb.__waDb = seed();
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Durable persistence                                                        */
+/*                                                                             */
+/*  The in-memory `db()` is the working copy. `ensureLoaded()` hydrates it from */
+/*  durable storage once per process; `persist()` flushes it back. Both are    */
+/*  no-ops when no persistence adapter is configured (pure in-memory mode).    */
+/* -------------------------------------------------------------------------- */
+
+let loadPromise: Promise<void> | null = null;
+
+/** Hydrate the in-memory store from durable storage (once per process). */
+export function ensureLoaded(): Promise<void> {
+  if (!persistenceEnabled()) return Promise.resolve();
+  if (!loadPromise) {
+    loadPromise = (async () => {
+      const snapshot = await loadSnapshot();
+      if (snapshot) {
+        globalForDb.__waDb = snapshot as unknown as DB;
+      } else {
+        // First run: seed and write the initial snapshot.
+        await saveSnapshot(db() as unknown as Record<string, unknown>);
+      }
+    })().catch((err) => {
+      // Don't wedge the process on a storage hiccup — fall back to memory.
+      console.error("[persistence] load failed, using in-memory state", err);
+      loadPromise = null;
+    });
+  }
+  return loadPromise;
+}
+
+/** Flush the current in-memory state to durable storage. */
+export async function persist(): Promise<void> {
+  if (!persistenceEnabled()) return;
+  try {
+    await saveSnapshot(db() as unknown as Record<string, unknown>);
+  } catch (err) {
+    console.error("[persistence] save failed", err);
+  }
 }
 
 /* -------------------------------------------------------------------------- */

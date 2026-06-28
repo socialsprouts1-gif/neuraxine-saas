@@ -1,12 +1,14 @@
-import { createContact, listContacts } from "@/lib/store";
+import { createContact, ensureLoaded, listContacts, persist } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
-export function GET(): Response {
+export async function GET(): Promise<Response> {
+  await ensureLoaded();
   return Response.json({ contacts: listContacts() });
 }
 
 export async function POST(request: Request): Promise<Response> {
+  await ensureLoaded();
   let body: { name?: string; phone?: string; email?: string; tags?: string[]; status?: string };
   try {
     body = await request.json();
@@ -26,5 +28,6 @@ export async function POST(request: Request): Promise<Response> {
     tags: body.tags ?? [],
     status: (body.status as never) ?? "lead",
   });
+  await persist();
   return Response.json({ ok: true, contact }, { status: 201 });
 }

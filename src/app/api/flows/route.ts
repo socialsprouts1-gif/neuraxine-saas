@@ -1,12 +1,14 @@
-import { createFlow, listFlows, listJobs, type Flow } from "@/lib/store";
+import { createFlow, ensureLoaded, listFlows, listJobs, persist, type Flow } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
-export function GET(): Response {
+export async function GET(): Promise<Response> {
+  await ensureLoaded();
   return Response.json({ flows: listFlows(), jobs: listJobs() });
 }
 
 export async function POST(request: Request): Promise<Response> {
+  await ensureLoaded();
   let body: Partial<Flow>;
   try {
     body = await request.json();
@@ -24,5 +26,6 @@ export async function POST(request: Request): Promise<Response> {
     keywords: body.keywords ?? [],
     steps: body.steps,
   });
+  await persist();
   return Response.json({ ok: true, flow }, { status: 201 });
 }

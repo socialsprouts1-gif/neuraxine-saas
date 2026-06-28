@@ -71,9 +71,13 @@ curl -X POST http://localhost:3000/api/whatsapp/send \
 
 ## Notes & next steps
 
+- Incoming messages now flow through the **automation engine** (`src/lib/
+  automation.ts`): they are stored, matched against chatbot rules for an
+  auto-reply, and enrolled into any matching drip flows. The team inbox,
+  campaigns and analytics are all driven from this data.
+- Data is persisted via a pluggable adapter (in-memory / file / Postgres) —
+  see [`deployment.md`](./deployment.md).
 - The send endpoint is currently **unauthenticated** because the portal has no
   auth layer yet. Put it behind session/API-key auth before exposing it.
-- Incoming messages and delivery statuses are logged to the server console.
-  Wire them to a datastore to power the inbox and campaign analytics.
 - When ready for clients, replace the env-based single config with per-tenant
   credentials captured via Meta Embedded Signup.

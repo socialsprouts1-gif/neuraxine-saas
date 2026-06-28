@@ -4,6 +4,8 @@ import {
   getMessages,
   markConversationRead,
   db,
+  ensureLoaded,
+  persist,
 } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -12,11 +14,13 @@ export async function GET(
   _req: Request,
   ctx: { params: Promise<{ id: string }> },
 ): Promise<Response> {
+  await ensureLoaded();
   const { id } = await ctx.params;
   const conv = db().conversations.find((c) => c.id === id);
   if (!conv) return Response.json({ ok: false, error: "Not found" }, { status: 404 });
 
   markConversationRead(id);
+  await persist();
   return Response.json({
     conversation: conv,
     contact: getContact(conv.contactId),
@@ -29,6 +33,7 @@ export async function POST(
   request: Request,
   ctx: { params: Promise<{ id: string }> },
 ): Promise<Response> {
+  await ensureLoaded();
   const { id } = await ctx.params;
   const conv = db().conversations.find((c) => c.id === id);
   if (!conv) return Response.json({ ok: false, error: "Not found" }, { status: 404 });
@@ -45,5 +50,6 @@ export async function POST(
   if (!body.text) return Response.json({ ok: false, error: "`text` is required" }, { status: 400 });
 
   const message = await sendOutbound(contact, body.text, { via: "manual" });
+  await persist();
   return Response.json({ ok: true, message });
 }

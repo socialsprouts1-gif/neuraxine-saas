@@ -1,5 +1,6 @@
 import {
   db,
+  ensureLoaded,
   getActivity,
   listCampaigns,
   listContacts,
@@ -10,7 +11,8 @@ import {
 export const dynamic = "force-dynamic";
 
 /** Summary payload for the main dashboard. */
-export function GET(): Response {
+export async function GET(): Promise<Response> {
+  await ensureLoaded();
   const campaigns = listCampaigns();
   const contacts = listContacts();
   const conversations = listConversations();

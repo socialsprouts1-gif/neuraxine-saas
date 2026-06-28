@@ -1,7 +1,8 @@
-import { listConversations } from "@/lib/store";
+import { ensureLoaded, listConversations } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
-export function GET(): Response {
+export async function GET(): Promise<Response> {
+  await ensureLoaded();
   return Response.json({ conversations: listConversations() });
 }

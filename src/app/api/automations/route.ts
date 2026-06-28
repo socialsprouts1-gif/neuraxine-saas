@@ -1,12 +1,14 @@
-import { createRule, listRules, type AutomationRule } from "@/lib/store";
+import { createRule, ensureLoaded, listRules, persist, type AutomationRule } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
-export function GET(): Response {
+export async function GET(): Promise<Response> {
+  await ensureLoaded();
   return Response.json({ rules: listRules() });
 }
 
 export async function POST(request: Request): Promise<Response> {
+  await ensureLoaded();
   let body: Partial<AutomationRule>;
   try {
     body = await request.json();
@@ -26,5 +28,6 @@ export async function POST(request: Request): Promise<Response> {
     responseTemplate: body.responseTemplate,
     priority: body.priority ?? 10,
   });
+  await persist();
   return Response.json({ ok: true, rule }, { status: 201 });
 }

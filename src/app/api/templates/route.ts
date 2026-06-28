@@ -1,12 +1,14 @@
-import { createTemplate, listTemplates, type TemplateCategory } from "@/lib/store";
+import { createTemplate, ensureLoaded, listTemplates, persist, type TemplateCategory } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
-export function GET(): Response {
+export async function GET(): Promise<Response> {
+  await ensureLoaded();
   return Response.json({ templates: listTemplates() });
 }
 
 export async function POST(request: Request): Promise<Response> {
+  await ensureLoaded();
   let body: { name?: string; category?: TemplateCategory; language?: string; body?: string };
   try {
     body = await request.json();
@@ -25,5 +27,6 @@ export async function POST(request: Request): Promise<Response> {
     body: body.body,
     variableCount,
   });
+  await persist();
   return Response.json({ ok: true, template }, { status: 201 });
 }
