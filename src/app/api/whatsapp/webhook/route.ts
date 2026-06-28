@@ -3,10 +3,10 @@ import {
   extractWebhookValues,
   isWhatsAppConfigured,
   markAsRead,
-  sendText,
   type IncomingMessage,
   type WebhookPayload,
 } from "@/lib/whatsapp";
+import { processInbound } from "@/lib/automation";
 
 /**
  * WhatsApp Cloud API webhook.
@@ -78,8 +78,9 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   for (const value of extractWebhookValues(payload)) {
+    const contactName = value.contacts?.[0]?.profile?.name;
     for (const message of value.messages ?? []) {
-      await handleIncomingMessage(message);
+      await handleIncomingMessage(message, contactName);
     }
     for (const status of value.statuses ?? []) {
       // Delivery lifecycle: sent → delivered → read (or failed). Persist these
@@ -94,22 +95,22 @@ export async function POST(request: Request): Promise<Response> {
   return new Response("OK", { status: 200 });
 }
 
-async function handleIncomingMessage(message: IncomingMessage): Promise<void> {
-  const preview =
+async function handleIncomingMessage(
+  message: IncomingMessage,
+  contactName?: string,
+): Promise<void> {
+  const body =
     message.type === "text" ? message.text?.body ?? "" : `[${message.type}]`;
-  console.info(`[whatsapp] message from ${message.from}: ${preview}`);
-
-  if (!isWhatsAppConfigured()) return;
+  console.info(`[whatsapp] message from ${message.from}: ${body}`);
 
   // Acknowledge with a read receipt so the sender sees blue ticks.
-  await markAsRead(message.id).catch(() => undefined);
-
-  // Optional auto-reply, controlled by env so it can be disabled in production
-  // once a real chatbot/inbox handles replies.
-  const autoReply = process.env.WHATSAPP_AUTO_REPLY_MESSAGE;
-  if (autoReply && message.type === "text") {
-    await sendText(message.from, autoReply).catch((err) =>
-      console.error("[whatsapp] auto-reply failed", err),
-    );
+  if (isWhatsAppConfigured()) {
+    await markAsRead(message.id).catch(() => undefined);
   }
+
+  // Run the automation engine: records the message, fires auto-reply rules and
+  // enrolls the contact into any matching drip flows.
+  await processInbound(message.from, body, contactName).catch((err) =>
+    console.error("[whatsapp] processInbound failed", err),
+  );
 }
