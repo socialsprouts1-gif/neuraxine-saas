@@ -1,290 +1,119 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Plus,
-  Play,
-  Pause,
-  Copy,
-  Trash2,
-  GitBranch,
-  Zap,
-  MessageCircle,
-  Clock,
-  Filter,
-  Users,
-  MoreHorizontal,
-  ArrowRight,
-  CheckCircle,
-  Bot,
-  ShoppingCart,
-  Bell,
-} from "lucide-react";
+import { GitBranch, Plus, Clock, Zap, ArrowDown, PlayCircle } from "lucide-react";
 import Header from "@/components/dashboard/Header";
+import { useApi, mutate } from "@/lib/use-api";
 
-const workflows = [
-  {
-    id: 1,
-    name: "Welcome & Onboarding Flow",
-    trigger: "New Contact Added",
-    steps: 6,
-    status: "Active",
-    runs: 1247,
-    lastRun: "2 min ago",
-    color: "#00FF87",
-    icon: Users,
-    category: "Onboarding",
-  },
-  {
-    id: 2,
-    name: "Abandoned Cart Recovery",
-    trigger: "Cart Abandoned > 1hr",
-    steps: 4,
-    status: "Active",
-    runs: 892,
-    lastRun: "8 min ago",
-    color: "#00D4FF",
-    icon: ShoppingCart,
-    category: "Ecommerce",
-  },
-  {
-    id: 3,
-    name: "Lead Nurture Sequence",
-    trigger: "Lead Qualified",
-    steps: 8,
-    status: "Active",
-    runs: 2341,
-    lastRun: "1 min ago",
-    color: "#A855F7",
-    icon: Bot,
-    category: "Sales",
-  },
-  {
-    id: 4,
-    name: "Appointment Reminder",
-    trigger: "24h Before Booking",
-    steps: 3,
-    status: "Active",
-    runs: 456,
-    lastRun: "5 min ago",
-    color: "#F59E0B",
-    icon: Bell,
-    category: "Bookings",
-  },
-  {
-    id: 5,
-    name: "Payment Follow-up",
-    trigger: "Invoice Overdue",
-    steps: 5,
-    status: "Paused",
-    runs: 234,
-    lastRun: "2 days ago",
-    color: "#EC4899",
-    icon: Clock,
-    category: "Finance",
-  },
-];
+interface FlowStep { delayMinutes: number; message: string }
+interface Flow {
+  id: string; name: string; enabled: boolean; trigger: string; keywords: string[];
+  steps: FlowStep[]; enrolledCount: number; completedCount: number;
+}
+interface Job { id: string; flowName: string; message: string; runAt: string; status: string }
 
-const workflowNodes = [
-  { label: "Trigger", icon: Zap, color: "#F59E0B", desc: "New Contact" },
-  { label: "Send Message", icon: MessageCircle, color: "#00FF87", desc: "Welcome msg" },
-  { label: "Wait 24h", icon: Clock, color: "#00D4FF", desc: "Delay node" },
-  { label: "Check Reply", icon: Filter, color: "#A855F7", desc: "Condition" },
-  { label: "AI Response", icon: Bot, color: "#00FF87", desc: "GPT-4o" },
-  { label: "Tag Lead", icon: CheckCircle, color: "#00D4FF", desc: "CRM update" },
-];
+function fmtDelay(min: number): string {
+  if (min < 60) return `${min}m`;
+  if (min < 1440) return `${Math.round(min / 60)}h`;
+  return `${Math.round(min / 1440)}d`;
+}
+function fmtWhen(iso: string): string {
+  const diff = new Date(iso).getTime() - Date.now();
+  const m = Math.round(diff / 60000);
+  if (m <= 0) return "due now";
+  if (m < 60) return `in ${m}m`;
+  const h = Math.round(m / 60);
+  return h < 24 ? `in ${h}h` : `in ${Math.round(h / 24)}d`;
+}
 
 export default function WorkflowsPage() {
+  const { data, refetch } = useApi<{ flows: Flow[]; jobs: Job[] }>("/api/flows");
+  const [busy, setBusy] = useState(false);
+
+  const flows = data?.flows ?? [];
+  const pendingJobs = (data?.jobs ?? []).filter((j) => j.status === "pending");
+
+  async function processDue() {
+    setBusy(true);
+    await mutate("/api/cron/process", "POST");
+    setBusy(false);
+    refetch();
+  }
+
   return (
     <div className="bg-[#050508] min-h-full">
-      <Header title="Workflow Automation" subtitle="Visual drag-and-drop automation builder" />
-
+      <Header title="Workflows" subtitle="Time-delayed drip sequences and follow-ups" />
       <div className="p-6 space-y-6">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[
-            { label: "Active Workflows", value: "24", color: "#00FF87" },
-            { label: "Total Runs Today", value: "5,842", color: "#00D4FF" },
-            { label: "Success Rate", value: "99.2%", color: "#A855F7" },
-            { label: "Avg Completion", value: "2.4h", color: "#F59E0B" },
-          ].map((s, i) => (
-            <motion.div
-              key={s.label}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.07 }}
-              className="glass-card p-4"
-            >
-              <div className="text-2xl font-black mb-0.5" style={{ color: s.color }}>{s.value}</div>
-              <div className="text-xs text-white/50">{s.label}</div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Toolbar */}
-        <div className="flex items-center gap-3">
-          <div className="flex gap-2 flex-1 overflow-x-auto">
-            {["All", "Active", "Paused", "Onboarding", "Sales", "Ecommerce"].map((t) => (
-              <button
-                key={t}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
-                  t === "All"
-                    ? "bg-[#00FF87]/10 text-[#00FF87] border border-[#00FF87]/20"
-                    : "text-white/50 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-          <button className="btn-primary text-sm py-2 whitespace-nowrap">
-            <Plus className="w-4 h-4" />
-            New Workflow
-          </button>
-        </div>
-
-        {/* Workflow list */}
-        <div className="space-y-3">
-          {workflows.map((wf, i) => (
-            <motion.div
-              key={wf.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + i * 0.08 }}
-              className="glass-card p-5 hover:border-white/20 transition-all duration-200 group cursor-pointer"
-            >
-              <div className="flex items-center gap-4">
-                {/* Icon */}
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: `${wf.color}15`, border: `1px solid ${wf.color}25` }}
-                >
-                  <wf.icon className="w-6 h-6" style={{ color: wf.color }} />
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold group-hover:text-[#00FF87] transition-colors">
-                          {wf.name}
-                        </h3>
-                        <span
-                          className="text-[10px] px-2 py-0.5 rounded-full"
-                          style={{ background: `${wf.color}15`, color: wf.color }}
-                        >
-                          {wf.category}
-                        </span>
-                      </div>
-                      <div className="text-xs text-white/50 mt-0.5">
-                        Trigger: <span className="text-white/70">{wf.trigger}</span>
-                        <span className="text-white/20 mx-2">·</span>
-                        {wf.steps} steps
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`text-xs px-2.5 py-1 rounded-full font-medium flex items-center gap-1.5 ${
-                          wf.status === "Active"
-                            ? "bg-[#00FF87]/10 text-[#00FF87] border border-[#00FF87]/20"
-                            : "bg-white/5 text-white/40 border border-white/10"
-                        }`}
-                      >
-                        <span className={`w-1.5 h-1.5 rounded-full ${wf.status === "Active" ? "bg-[#00FF87] animate-pulse" : "bg-white/30"}`} />
-                        {wf.status}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Stats row */}
-                  <div className="flex items-center gap-6 mt-3">
-                    <div className="text-xs text-white/50">
-                      <span className="font-semibold text-white">{wf.runs.toLocaleString()}</span> runs
-                    </div>
-                    <div className="text-xs text-white/50">
-                      Last: <span className="text-white/70">{wf.lastRun}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button className="p-2 rounded-lg hover:bg-white/10 transition-colors" title="Edit">
-                    <GitBranch className="w-4 h-4 text-white/60" />
-                  </button>
-                  <button className="p-2 rounded-lg hover:bg-white/10 transition-colors" title={wf.status === "Active" ? "Pause" : "Play"}>
-                    {wf.status === "Active" ? (
-                      <Pause className="w-4 h-4 text-[#F59E0B]" />
-                    ) : (
-                      <Play className="w-4 h-4 text-[#00FF87]" />
-                    )}
-                  </button>
-                  <button className="p-2 rounded-lg hover:bg-white/10 transition-colors" title="Duplicate">
-                    <Copy className="w-4 h-4 text-white/60" />
-                  </button>
-                  <button className="p-2 rounded-lg hover:bg-red-500/10 transition-colors" title="Delete">
-                    <Trash2 className="w-4 h-4 text-red-400/60" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Workflow preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="glass-card p-6"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="font-semibold">Visual Flow Preview</h3>
-              <p className="text-xs text-white/50">Welcome & Onboarding Flow</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Flows */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold flex items-center gap-2"><GitBranch className="w-4 h-4 text-[#00FF87]" /> Active flows</h3>
+              <button className="btn-primary text-sm py-1.5 px-3"><Plus className="w-3.5 h-3.5" /> New Flow</button>
             </div>
-            <button className="btn-primary text-xs py-2 px-4">
-              Open Builder
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Nodes */}
-          <div className="flex items-center gap-0 overflow-x-auto pb-4">
-            {workflowNodes.map((node, i) => (
-              <div key={node.label} className="flex items-center flex-shrink-0">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.8 + i * 0.08 }}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl border hover:border-white/30 transition-all cursor-pointer group"
-                  style={{
-                    background: `${node.color}08`,
-                    borderColor: `${node.color}25`,
-                    minWidth: 100,
-                  }}
-                >
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ background: `${node.color}20`, border: `1px solid ${node.color}30` }}
-                  >
-                    <node.icon className="w-5 h-5" style={{ color: node.color }} />
+            {flows.map((f, i) => (
+              <motion.div key={f.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass-card p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-semibold">{f.name}</h4>
+                      <span className={`w-2 h-2 rounded-full ${f.enabled ? "bg-[#00FF87]" : "bg-white/20"}`} />
+                    </div>
+                    <div className="text-xs text-white/40 mt-0.5">
+                      Trigger: {f.trigger.replace(/_/g, " ")}{f.keywords.length ? ` · ${f.keywords.join(", ")}` : ""}
+                    </div>
                   </div>
-                  <span className="text-xs font-semibold text-center">{node.label}</span>
-                  <span className="text-[10px] text-white/40 text-center">{node.desc}</span>
-                </motion.div>
-                {i < workflowNodes.length - 1 && (
-                  <div className="flex items-center px-2">
-                    <div className="w-8 h-px bg-gradient-to-r from-white/20 to-white/5" />
-                    <ArrowRight className="w-3 h-3 text-white/20 -ml-1" />
+                  <div className="flex gap-4 text-center">
+                    <div><div className="text-sm font-bold text-[#00D4FF]">{f.enrolledCount}</div><div className="text-[10px] text-white/40">enrolled</div></div>
+                    <div><div className="text-sm font-bold text-[#00FF87]">{f.completedCount}</div><div className="text-[10px] text-white/40">completed</div></div>
                   </div>
-                )}
-              </div>
+                </div>
+                {/* Steps */}
+                <div className="space-y-2">
+                  {f.steps.map((s, idx) => (
+                    <div key={idx}>
+                      <div className="flex items-start gap-3 bg-white/3 border border-white/8 rounded-xl px-3 py-2.5">
+                        <div className="flex items-center gap-1.5 text-[11px] text-[#F59E0B] font-medium flex-shrink-0 pt-0.5">
+                          <Clock className="w-3 h-3" /> {fmtDelay(s.delayMinutes)}
+                        </div>
+                        <p className="text-sm text-white/70 leading-snug">{s.message}</p>
+                      </div>
+                      {idx < f.steps.length - 1 && <div className="flex justify-center py-0.5"><ArrowDown className="w-3 h-3 text-white/25" /></div>}
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
             ))}
           </div>
-        </motion.div>
+
+          {/* Scheduled jobs */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold flex items-center gap-2"><Zap className="w-4 h-4 text-[#A855F7]" /> Scheduled</h3>
+              <button onClick={processDue} disabled={busy} className="text-xs flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#A855F7]/10 border border-[#A855F7]/25 text-[#A855F7] font-medium disabled:opacity-50">
+                <PlayCircle className="w-3.5 h-3.5" /> Run due now
+              </button>
+            </div>
+            <div className="glass-card p-4">
+              {pendingJobs.length === 0 ? (
+                <p className="text-sm text-white/35 text-center py-6">No pending jobs.<br />Enroll a contact via the Inbox simulator to see drips queue here.</p>
+              ) : (
+                <div className="space-y-2">
+                  {pendingJobs.slice(0, 12).map((j) => (
+                    <div key={j.id} className="flex items-start gap-2 text-xs border-b border-white/5 pb-2 last:border-0">
+                      <span className="text-[#F59E0B] flex-shrink-0 font-medium">{fmtWhen(j.runAt)}</span>
+                      <div className="min-w-0">
+                        <div className="text-white/40">{j.flowName}</div>
+                        <div className="text-white/70 truncate">{j.message}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

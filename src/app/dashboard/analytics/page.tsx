@@ -1,257 +1,109 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Send, CheckCircle, Eye, Users } from "lucide-react";
 import {
-  TrendingUp,
-  TrendingDown,
-  MessageCircle,
-  Users,
-  Target,
-  DollarSign,
-  Bot,
-  Clock,
-  Eye,
-  MousePointer,
-  ArrowUpRight,
-} from "lucide-react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
+  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer,
+  Tooltip, XAxis, YAxis,
 } from "recharts";
 import Header from "@/components/dashboard/Header";
+import { useApi } from "@/lib/use-api";
 
-const revenueData = [
-  { month: "Jan", revenue: 18000, leads: 420, conversion: 32 },
-  { month: "Feb", revenue: 22000, leads: 510, conversion: 35 },
-  { month: "Mar", revenue: 28000, leads: 580, conversion: 38 },
-  { month: "Apr", revenue: 31000, leads: 640, conversion: 40 },
-  { month: "May", revenue: 26000, leads: 520, conversion: 36 },
-  { month: "Jun", revenue: 38000, leads: 720, conversion: 45 },
-  { month: "Jul", revenue: 42000, leads: 800, conversion: 48 },
-];
+interface Analytics {
+  kpis: { totalSent: number; delivered: number; deliveryRate: number; readRate: number; inbound: number; contacts: number; activeCampaigns: number };
+  trend: Array<{ label: string; sent: number; delivered: number; read: number }>;
+  funnel: Array<{ stage: string; value: number }>;
+  topRules: Array<{ name: string; triggered: number }>;
+}
 
-const channelData = [
-  { name: "Inbound", value: 42 },
-  { name: "Campaigns", value: 31 },
-  { name: "Referral", value: 15 },
-  { name: "Organic", value: 12 },
-];
-
-const COLORS = ["#00FF87", "#00D4FF", "#A855F7", "#F59E0B"];
-
-const responseTimeData = [
-  { hour: "00h", time: 0.4 },
-  { hour: "04h", time: 0.3 },
-  { hour: "08h", time: 1.2 },
-  { hour: "12h", time: 2.1 },
-  { hour: "16h", time: 1.8 },
-  { hour: "20h", time: 0.9 },
-];
-
-const kpis = [
-  { label: "Total Revenue", value: "$204K", change: "+31.4%", up: true, icon: DollarSign, color: "#00FF87" },
-  { label: "Leads Generated", value: "4,190", change: "+24.8%", up: true, icon: Users, color: "#00D4FF" },
-  { label: "Conversion Rate", value: "38.9%", change: "+5.2%", up: true, icon: Target, color: "#A855F7" },
-  { label: "Avg Response Time", value: "0.8s", change: "-65%", up: true, icon: Clock, color: "#F59E0B" },
-  { label: "Chats Automated", value: "94.2%", change: "+2.1%", up: true, icon: Bot, color: "#EC4899" },
-  { label: "Campaign Open Rate", value: "74.2%", change: "+8.3%", up: true, icon: Eye, color: "#00FF87" },
-];
+const fmt = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}K` : `${n}`);
+const funnelColors = ["#00FF87", "#00D4FF", "#A855F7", "#F59E0B"];
 
 export default function AnalyticsPage() {
+  const { data } = useApi<Analytics>("/api/analytics");
+  const k = data?.kpis;
+
+  const cards = [
+    { label: "Total Sent", value: k ? fmt(k.totalSent) : "—", icon: Send, color: "#00FF87" },
+    { label: "Delivery Rate", value: k ? `${k.deliveryRate}%` : "—", icon: CheckCircle, color: "#00D4FF" },
+    { label: "Read Rate", value: k ? `${k.readRate}%` : "—", icon: Eye, color: "#A855F7" },
+    { label: "Contacts", value: k ? fmt(k.contacts) : "—", icon: Users, color: "#F59E0B" },
+  ];
+
   return (
     <div className="bg-[#050508] min-h-full">
-      <Header title="Analytics" subtitle="Real-time performance insights and revenue tracking" />
-
+      <Header title="Analytics" subtitle="Performance across messages, campaigns and automations" />
       <div className="p-6 space-y-6">
-        {/* Date range selector */}
-        <div className="flex items-center gap-2">
-          {["Today", "7 Days", "30 Days", "3 Months", "This Year"].map((r) => (
-            <button
-              key={r}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                r === "30 Days"
-                  ? "bg-[#00FF87]/10 text-[#00FF87] border border-[#00FF87]/20"
-                  : "text-white/50 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              {r}
-            </button>
-          ))}
-        </div>
-
-        {/* KPI grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {kpis.map((kpi, i) => (
-            <motion.div
-              key={kpi.label}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.06 }}
-              className="glass-card p-4"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <kpi.icon className="w-4 h-4" style={{ color: kpi.color }} />
-                <span
-                  className={`text-xs font-semibold flex items-center gap-0.5 ${kpi.up ? "text-[#00FF87]" : "text-red-400"}`}
-                >
-                  {kpi.up ? <ArrowUpRight className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                  {kpi.change}
-                </span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {cards.map((c, i) => (
+            <motion.div key={c.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass-card p-5">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3" style={{ background: `${c.color}15`, border: `1px solid ${c.color}25` }}>
+                <c.icon className="w-4 h-4" style={{ color: c.color }} />
               </div>
-              <div className="text-xl font-black" style={{ color: kpi.color }}>{kpi.value}</div>
-              <div className="text-[10px] text-white/50 mt-0.5">{kpi.label}</div>
+              <div className="text-2xl font-black" style={{ color: c.color }}>{c.value}</div>
+              <div className="text-xs text-white/50 mt-0.5">{c.label}</div>
             </motion.div>
           ))}
         </div>
 
-        {/* Revenue chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="glass-card p-5"
-        >
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h3 className="font-semibold">Revenue & Conversions</h3>
-              <p className="text-xs text-white/50">Monthly performance overview</p>
-            </div>
-            <div className="flex gap-3 text-xs text-white/50">
-              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#00FF87]" />Revenue</span>
-              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#00D4FF]" />Leads</span>
-            </div>
+        {/* Trend */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card p-6">
+          <h3 className="font-semibold mb-4">Message volume — last 14 days</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={data?.trend ?? []}>
+                <defs>
+                  <linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#00FF87" stopOpacity={0.4} /><stop offset="100%" stopColor="#00FF87" stopOpacity={0} /></linearGradient>
+                  <linearGradient id="r" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#A855F7" stopOpacity={0.4} /><stop offset="100%" stopColor="#A855F7" stopOpacity={0} /></linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis dataKey="label" stroke="rgba(255,255,255,0.3)" fontSize={11} tickLine={false} />
+                <YAxis stroke="rgba(255,255,255,0.3)" fontSize={11} tickLine={false} tickFormatter={fmt} />
+                <Tooltip contentStyle={{ background: "#0A0A0F", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }} />
+                <Area type="monotone" dataKey="sent" stroke="#00FF87" strokeWidth={2} fill="url(#s)" />
+                <Area type="monotone" dataKey="read" stroke="#A855F7" strokeWidth={2} fill="url(#r)" />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
-          <ResponsiveContainer width="100%" height={250}>
-            <AreaChart data={revenueData}>
-              <defs>
-                <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#00FF87" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#00FF87" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="leadGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#00D4FF" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#00D4FF" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip
-                contentStyle={{
-                  background: "rgba(14,14,28,0.95)",
-                  border: "1px solid rgba(0,255,135,0.2)",
-                  borderRadius: "12px",
-                  fontSize: "12px",
-                }}
-              />
-              <Area type="monotone" dataKey="revenue" stroke="#00FF87" strokeWidth={2} fill="url(#revGrad)" />
-              <Area type="monotone" dataKey="leads" stroke="#00D4FF" strokeWidth={2} fill="url(#leadGrad)" />
-            </AreaChart>
-          </ResponsiveContainer>
         </motion.div>
 
-        {/* Bottom charts */}
-        <div className="grid lg:grid-cols-3 gap-4">
-          {/* Channel breakdown */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="glass-card p-5"
-          >
-            <h3 className="font-semibold mb-1">Lead Sources</h3>
-            <p className="text-xs text-white/50 mb-5">Where leads come from</p>
-            <ResponsiveContainer width="100%" height={160}>
-              <PieChart>
-                <Pie data={channelData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3} dataKey="value">
-                  {channelData.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    background: "rgba(14,14,28,0.95)",
-                    border: "1px solid rgba(0,255,135,0.2)",
-                    borderRadius: "12px",
-                    fontSize: "12px",
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="space-y-2 mt-2">
-              {channelData.map((c, i) => (
-                <div key={c.name} className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ background: COLORS[i] }} />
-                    <span className="text-white/60">{c.name}</span>
-                  </div>
-                  <span className="font-semibold">{c.value}%</span>
-                </div>
-              ))}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Funnel */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-card p-6">
+            <h3 className="font-semibold mb-4">Delivery funnel</h3>
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={data?.funnel ?? []} layout="vertical">
+                  <XAxis type="number" stroke="rgba(255,255,255,0.3)" fontSize={11} tickFormatter={fmt} />
+                  <YAxis type="category" dataKey="stage" stroke="rgba(255,255,255,0.5)" fontSize={12} width={80} tickLine={false} />
+                  <Tooltip contentStyle={{ background: "#0A0A0F", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
+                  <Bar dataKey="value" radius={[0, 6, 6, 0]}>
+                    {(data?.funnel ?? []).map((_, i) => <Cell key={i} fill={funnelColors[i % funnelColors.length]} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </motion.div>
 
-          {/* Response time */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.55 }}
-            className="glass-card p-5"
-          >
-            <h3 className="font-semibold mb-1">Avg Response Time</h3>
-            <p className="text-xs text-white/50 mb-5">Seconds · by hour of day</p>
-            <ResponsiveContainer width="100%" height={190}>
-              <BarChart data={responseTimeData} barSize={20}>
-                <XAxis dataKey="hour" />
-                <YAxis />
-                <Tooltip
-                  contentStyle={{
-                    background: "rgba(14,14,28,0.95)",
-                    border: "1px solid rgba(0,255,135,0.2)",
-                    borderRadius: "12px",
-                    fontSize: "12px",
-                  }}
-                />
-                <Bar dataKey="time" fill="#00D4FF" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </motion.div>
-
-          {/* Conversion trend */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="glass-card p-5"
-          >
-            <h3 className="font-semibold mb-1">Conversion Rate Trend</h3>
-            <p className="text-xs text-white/50 mb-5">Monthly conversion %</p>
-            <ResponsiveContainer width="100%" height={190}>
-              <LineChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis domain={[25, 55]} />
-                <Tooltip
-                  contentStyle={{
-                    background: "rgba(14,14,28,0.95)",
-                    border: "1px solid rgba(0,255,135,0.2)",
-                    borderRadius: "12px",
-                    fontSize: "12px",
-                  }}
-                />
-                <Line type="monotone" dataKey="conversion" stroke="#A855F7" strokeWidth={2.5} dot={{ fill: "#A855F7", r: 4 }} />
-              </LineChart>
-            </ResponsiveContainer>
+          {/* Top rules */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-card p-6">
+            <h3 className="font-semibold mb-4">Top automation rules</h3>
+            <div className="space-y-3">
+              {(data?.topRules ?? []).map((r, i) => {
+                const max = data?.topRules[0]?.triggered || 1;
+                return (
+                  <div key={r.name}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-white/70">{r.name}</span>
+                      <span className="text-white/45">{r.triggered.toLocaleString()}</span>
+                    </div>
+                    <div className="h-2 bg-white/8 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full" style={{ width: `${(r.triggered / max) * 100}%`, background: funnelColors[i % funnelColors.length] }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </motion.div>
         </div>
       </div>

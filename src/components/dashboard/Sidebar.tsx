@@ -10,11 +10,8 @@ import {
   Megaphone,
   Users,
   BarChart3,
-  ShoppingCart,
   Settings,
   HelpCircle,
-  Bell,
-  CreditCard,
   Plug,
   ChevronLeft,
   MessageCircle,
@@ -43,7 +40,6 @@ const navSections = [
     label: "CRM",
     items: [
       { icon: Users, label: "Contacts & CRM", href: "/dashboard/crm" },
-      { icon: ShoppingCart, label: "Commerce", href: "/dashboard/commerce" },
     ],
   },
   {
@@ -56,7 +52,6 @@ const navSections = [
     label: "Config",
     items: [
       { icon: Plug, label: "Integrations", href: "/dashboard/integrations" },
-      { icon: CreditCard, label: "Billing", href: "/dashboard/billing" },
       { icon: Settings, label: "Settings", href: "/dashboard/settings" },
     ],
   },
