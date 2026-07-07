@@ -3,207 +3,93 @@
 import { motion } from "framer-motion";
 import {
   Bot,
-  GitBranch,
-  Megaphone,
-  Users,
-  Brain,
+  Languages,
+  PhoneOutgoing,
+  MessageSquare,
   BarChart3,
-  ShoppingCart,
-  Wand2,
   Plug,
-  Globe,
+  ShieldCheck,
+  Wallet,
   Mic,
-  Calendar,
 } from "lucide-react";
 
 const features = [
   {
     icon: Bot,
-    color: "#00FF87",
-    bgColor: "rgba(0,255,135,0.1)",
-    borderColor: "rgba(0,255,135,0.2)",
-    title: "AI Chatbot Builder",
-    desc: "Train AI chatbots on your business data — FAQs, products, policies. Deploy multilingual bots with human handoff in minutes.",
-    tags: ["GPT-4", "Claude", "Gemini"],
+    title: "No-code agent builder",
+    desc: "Describe your business, pick a voice, paste your FAQs — your calling agent is live in under 10 minutes.",
   },
   {
-    icon: GitBranch,
-    color: "#00D4FF",
-    bgColor: "rgba(0,212,255,0.1)",
-    borderColor: "rgba(0,212,255,0.2)",
-    title: "Visual Workflow Builder",
-    desc: "Drag-and-drop automation builder. Create follow-up sequences, abandoned cart recovery, and onboarding flows without code.",
-    tags: ["No-Code", "Zapier-like", "n8n"],
+    icon: Languages,
+    title: "12 Indian languages",
+    desc: "Hindi, Hinglish, Tamil, Telugu, Marathi, Bengali and more — with natural code-switching mid-sentence.",
   },
   {
-    icon: Megaphone,
-    color: "#A855F7",
-    bgColor: "rgba(168,85,247,0.1)",
-    borderColor: "rgba(168,85,247,0.2)",
-    title: "Bulk Campaigns",
-    desc: "Broadcast personalized messages to thousands. Schedule campaigns, segment audiences, track opens and conversions.",
-    tags: ["Broadcast", "Scheduling", "Templates"],
-  },
-  {
-    icon: Users,
-    color: "#F59E0B",
-    bgColor: "rgba(245,158,11,0.1)",
-    borderColor: "rgba(245,158,11,0.2)",
-    title: "Built-in CRM",
-    desc: "Full lead pipeline with tags, notes, scores, and stages. AI predicts conversion probability for every lead.",
-    tags: ["Pipeline", "Lead Scoring", "AI Insights"],
-  },
-  {
-    icon: Brain,
-    color: "#EC4899",
-    bgColor: "rgba(236,72,153,0.1)",
-    borderColor: "rgba(236,72,153,0.2)",
-    title: "AI Sales Assistant",
-    desc: "AI qualifies leads, recommends replies, summarizes conversations, and detects purchase intent in real time.",
-    tags: ["Intent Detection", "Reply AI", "Summaries"],
-  },
-  {
-    icon: BarChart3,
-    color: "#00D4FF",
-    bgColor: "rgba(0,212,255,0.1)",
-    borderColor: "rgba(0,212,255,0.2)",
-    title: "Analytics Dashboard",
-    desc: "Real-time insights on response rates, conversion, revenue, campaign performance, and chatbot effectiveness.",
-    tags: ["Real-time", "Revenue", "Funnels"],
-  },
-  {
-    icon: ShoppingCart,
-    color: "#00FF87",
-    bgColor: "rgba(0,255,135,0.1)",
-    borderColor: "rgba(0,255,135,0.2)",
-    title: "WhatsApp Commerce",
-    desc: "Product catalogs, order tracking, payment links, automated invoices, and COD support directly in WhatsApp.",
-    tags: ["Shopify", "WooCommerce", "Payments"],
-  },
-  {
-    icon: Wand2,
-    color: "#A855F7",
-    bgColor: "rgba(168,85,247,0.1)",
-    borderColor: "rgba(168,85,247,0.2)",
-    title: "AI Content Generator",
-    desc: "Generate marketing messages, sales copy, follow-up scripts, and campaign hooks with AI — tailored to your brand.",
-    tags: ["Copywriting", "Templates", "Brand Voice"],
-  },
-  {
-    icon: Plug,
-    color: "#F59E0B",
-    bgColor: "rgba(245,158,11,0.1)",
-    borderColor: "rgba(245,158,11,0.2)",
-    title: "Powerful Integrations",
-    desc: "Connect to Shopify, HubSpot, Stripe, Calendly, Google Sheets, Zapier, Slack, and WhatsApp Cloud API natively.",
-    tags: ["Zapier", "Stripe", "HubSpot"],
-  },
-  {
-    icon: Globe,
-    color: "#00D4FF",
-    bgColor: "rgba(0,212,255,0.1)",
-    borderColor: "rgba(0,212,255,0.2)",
-    title: "White Label",
-    desc: "Agencies can white-label the entire platform — custom domains, branding, client workspaces, and reseller billing.",
-    tags: ["Agencies", "Custom Domain", "Resell"],
+    icon: PhoneOutgoing,
+    title: "Outbound campaigns",
+    desc: "Upload a CSV, set a call window and let the agent dial thousands of numbers with smart retries.",
   },
   {
     icon: Mic,
-    color: "#EC4899",
-    bgColor: "rgba(236,72,153,0.1)",
-    borderColor: "rgba(236,72,153,0.2)",
-    title: "AI Voice Agent",
-    desc: "Understand voice notes, respond with text-to-speech, and handle multilingual voice conversations automatically.",
-    tags: ["STT", "TTS", "Multilingual"],
+    title: "Human-like Indian voices",
+    desc: "Voices trained on Indian accents that handle interruptions, background noise and 'hello? hello?' gracefully.",
   },
   {
-    icon: Calendar,
-    color: "#00FF87",
-    bgColor: "rgba(0,255,135,0.1)",
-    borderColor: "rgba(0,255,135,0.2)",
-    title: "Appointment Booking",
-    desc: "Let AI schedule, confirm, and remind clients of appointments. Integrated with Calendly and Google Calendar.",
-    tags: ["Calendly", "Reminders", "AI Scheduling"],
+    icon: MessageSquare,
+    title: "WhatsApp follow-ups",
+    desc: "Automatically send payment links, brochures and booking confirmations on WhatsApp after every call.",
+  },
+  {
+    icon: BarChart3,
+    title: "Transcripts & analytics",
+    desc: "Every call recorded, transcribed and scored for sentiment, outcome and conversion — in one dashboard.",
+  },
+  {
+    icon: Plug,
+    title: "CRM & webhooks",
+    desc: "Push call outcomes to Zoho, HubSpot, Google Sheets or any webhook the moment a call ends.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "TRAI & RBI compliant",
+    desc: "Automatic DND scrubbing, consent logs, calling-hour limits and fair-practice scripts for collections.",
+  },
+  {
+    icon: Wallet,
+    title: "₹ wallet billing",
+    desc: "Pay-as-you-go minutes with UPI/netbanking recharge and GST invoices. No dollar cards needed.",
   },
 ];
 
 export default function Features() {
   return (
-    <section id="features" className="relative py-28 overflow-hidden">
-      <div className="absolute inset-0 dot-pattern opacity-30" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center space-y-4 mb-16"
-        >
-          <span className="section-badge">Platform Features</span>
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Everything you need to{" "}
-            <span className="gradient-text-green">automate growth</span>
+    <section id="features" className="py-24 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-14">
+          <span className="section-badge">Everything you need</span>
+          <h2 className="mt-5 text-3xl sm:text-5xl font-extrabold tracking-tight">
+            A full call centre, <span className="gradient-text">minus the call centre</span>
           </h2>
-          <p className="text-lg text-white/60 max-w-2xl mx-auto">
-            From AI chatbots to full CRM pipelines — WhatsFlow AI is the complete
-            WhatsApp automation stack for modern businesses.
+          <p className="mt-4 max-w-xl mx-auto text-white/60">
+            From dialer to analytics — every piece of voice infrastructure your business needs, in one platform.
           </p>
-        </motion.div>
+        </div>
 
-        {/* Features grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {features.map((feat, i) => (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {features.map((f, i) => (
             <motion.div
-              key={feat.title}
-              initial={{ opacity: 0, y: 30 }}
+              key={f.title}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.05 }}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="group relative glass-card p-6 hover:border-white/20 transition-all duration-300 hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)] cursor-pointer"
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.4, delay: (i % 3) * 0.08 }}
+              className="glass-card p-6 hover:border-[#8B5CF6]/40 transition-colors group"
             >
-              {/* Hover glow */}
-              <div
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{
-                  background: `radial-gradient(ellipse at top left, ${feat.bgColor}, transparent 60%)`,
-                }}
-              />
-
-              <div className="relative">
-                {/* Icon */}
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: feat.bgColor, border: `1px solid ${feat.borderColor}` }}
-                >
-                  <feat.icon className="w-6 h-6" style={{ color: feat.color }} />
-                </div>
-
-                {/* Title & desc */}
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
-                  {feat.title}
-                </h3>
-                <p className="text-sm text-white/55 leading-relaxed mb-4">{feat.desc}</p>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1.5">
-                  {feat.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-0.5 rounded-md text-xs font-medium border"
-                      style={{
-                        background: feat.bgColor,
-                        color: feat.color,
-                        borderColor: feat.borderColor,
-                      }}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+              <div className="w-11 h-11 rounded-xl bg-[#8B5CF6]/15 border border-[#8B5CF6]/25 flex items-center justify-center mb-4 group-hover:bg-[#8B5CF6]/25 transition-colors">
+                <f.icon className="w-5 h-5 text-[#A78BFA]" />
               </div>
+              <h3 className="font-semibold text-base mb-1.5">{f.title}</h3>
+              <p className="text-sm text-white/55 leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
         </div>
