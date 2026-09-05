@@ -111,7 +111,7 @@ export default function Pricing() {
             <button
               onClick={() => setYearly(!yearly)}
               className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${
-                yearly ? "bg-[#00FF87]" : "bg-white/20"
+                yearly ? "bg-accent" : "bg-white/20"
               }`}
             >
               <span
@@ -122,7 +122,7 @@ export default function Pricing() {
             </button>
             <span className={`text-sm font-medium flex items-center gap-2 ${yearly ? "text-white" : "text-white/50"}`}>
               Yearly
-              <span className="text-xs px-2 py-0.5 rounded-full bg-[#00FF87]/20 text-[#00FF87] font-semibold">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-accent/20 text-accent-ink font-semibold">
                 Save 30%
               </span>
             </span>
@@ -139,12 +139,12 @@ export default function Pricing() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className={`relative glass-card p-7 flex flex-col ${
-                plan.popular ? "border-[#00D4FF]/40 shadow-[0_0_50px_rgba(0,212,255,0.1)]" : ""
+                plan.popular ? "border-accent2/40 shadow-[0_0_50px_rgba(0,212,255,0.1)]" : ""
               }`}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="px-4 py-1 rounded-full text-xs font-bold bg-[#00D4FF] text-[#050508]">
+                  <span className="px-4 py-1 rounded-full text-xs font-bold bg-accent2 text-[#050508]">
                     Most Popular
                   </span>
                 </div>
@@ -179,7 +179,7 @@ export default function Pricing() {
                 {plan.features.map((f) => (
                   <li key={f.text} className="flex items-center gap-2.5 text-sm">
                     {f.included ? (
-                      <Check className="w-4 h-4 text-[#00FF87] flex-shrink-0" />
+                      <Check className="w-4 h-4 text-accent-ink flex-shrink-0" />
                     ) : (
                       <X className="w-4 h-4 text-white/20 flex-shrink-0" />
                     )}

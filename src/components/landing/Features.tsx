@@ -147,7 +147,7 @@ export default function Features() {
             <span className="gradient-text-green">automate growth</span>
           </h2>
           <p className="text-lg text-white/60 max-w-2xl mx-auto">
-            From AI chatbots to full CRM pipelines — WhatsFlow AI is the complete
+            From AI chatbots to full CRM pipelines — Neura Chat is the complete
             WhatsApp automation stack for modern businesses.
           </p>
         </motion.div>

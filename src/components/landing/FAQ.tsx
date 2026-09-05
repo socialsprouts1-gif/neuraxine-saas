@@ -7,7 +7,7 @@ import { ChevronDown } from "lucide-react";
 const faqs = [
   {
     q: "Is WhatsApp Cloud API officially supported?",
-    a: "Yes. WhatsFlow AI uses the official Meta WhatsApp Cloud API, meaning your account is fully compliant and protected from being banned. We are a Meta Business Partner.",
+    a: "Yes. Neura Chat uses the official Meta WhatsApp Cloud API, meaning your account is fully compliant and protected from being banned. We are a Meta Business Partner.",
   },
   {
     q: "Can I use AI chatbots with my own data?",
@@ -15,7 +15,7 @@ const faqs = [
   },
   {
     q: "Is coding knowledge required?",
-    a: "No. WhatsFlow AI is entirely no-code. Our visual drag-and-drop workflow builder lets you create complex automations without writing a single line of code.",
+    a: "No. Neura Chat is entirely no-code. Our visual drag-and-drop workflow builder lets you create complex automations without writing a single line of code.",
   },
   {
     q: "Can I send bulk campaigns to my contacts?",
@@ -23,7 +23,7 @@ const faqs = [
   },
   {
     q: "Is white-label support available?",
-    a: "Yes, on the Agency plan. You can fully white-label the platform with your own branding, custom domain, and create separate client workspaces — essentially reselling WhatsFlow AI under your brand.",
+    a: "Yes, on the Agency plan. You can fully white-label the platform with your own branding, custom domain, and create separate client workspaces — essentially reselling Neura Chat under your brand.",
   },
   {
     q: "Which AI models are supported?",
@@ -85,12 +85,12 @@ export default function FAQ() {
                 onClick={() => setOpen(open === i ? null : i)}
               >
                 <div className="flex items-center justify-between gap-4">
-                  <span className="font-semibold text-sm sm:text-base pr-4 group-hover:text-[#00FF87] transition-colors">
+                  <span className="font-semibold text-sm sm:text-base pr-4 group-hover:text-accent-ink transition-colors">
                     {faq.q}
                   </span>
                   <ChevronDown
                     className={`w-5 h-5 text-white/40 flex-shrink-0 transition-transform duration-300 ${
-                      open === i ? "rotate-180 text-[#00FF87]" : ""
+                      open === i ? "rotate-180 text-accent-ink" : ""
                     }`}
                   />
                 </div>
@@ -125,7 +125,7 @@ export default function FAQ() {
         >
           <h3 className="text-xl font-bold mb-2">Still have questions?</h3>
           <p className="text-white/60 mb-6 text-sm">
-            Our team is available 24/7 to answer any questions about WhatsFlow AI.
+            Our team is available 24/7 to answer any questions about Neura Chat.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <a href="#" className="btn-primary text-sm py-2.5 px-5">

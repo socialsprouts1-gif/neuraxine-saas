@@ -38,7 +38,7 @@ export default function Navbar() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#050508]/90 backdrop-blur-xl border-b border-white/10"
+          ? "bg-[var(--app-bg)]/90 backdrop-blur-xl border-b border-white/10"
           : "bg-transparent"
       }`}
     >
@@ -46,11 +46,11 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00FF87] to-[#00D4FF] flex items-center justify-center shadow-[0_0_20px_rgba(0,255,135,0.5)] group-hover:shadow-[0_0_30px_rgba(0,255,135,0.7)] transition-shadow">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-accent2 flex items-center justify-center shadow-[0_0_20px_rgba(0,255,135,0.5)] group-hover:shadow-[0_0_30px_rgba(0,255,135,0.7)] transition-shadow">
               <Zap className="w-4 h-4 text-[#050508]" />
             </div>
             <span className="font-bold text-lg">
-              WhatsFlow <span className="gradient-text-green">AI</span>
+              Neura <span className="gradient-text-green">Chat</span>
             </span>
           </Link>
 
@@ -87,7 +87,7 @@ export default function Navbar() {
                             href="#"
                             className="block px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors group"
                           >
-                            <div className="text-sm font-medium text-white group-hover:text-[#00FF87] transition-colors">
+                            <div className="text-sm font-medium text-white group-hover:text-accent-ink transition-colors">
                               {sub.label}
                             </div>
                             <div className="text-xs text-white/50 mt-0.5">{sub.desc}</div>
@@ -134,7 +134,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[#050508]/95 backdrop-blur-xl border-b border-white/10"
+            className="md:hidden bg-[var(--app-bg)]/95 backdrop-blur-xl border-b border-white/10"
           >
             <div className="px-4 py-4 space-y-1">
               {navItems.map((item) => (

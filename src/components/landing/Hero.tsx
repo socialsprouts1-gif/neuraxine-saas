@@ -15,7 +15,7 @@ import {
 
 const floatingCards = [
   {
-    icon: <MessageCircle className="w-4 h-4 text-[#00FF87]" />,
+    icon: <MessageCircle className="w-4 h-4 text-accent-ink" />,
     title: "AI Reply Sent",
     subtitle: "Response time: 0.3s",
     color: "#00FF87",
@@ -23,7 +23,7 @@ const floatingCards = [
     delay: 0,
   },
   {
-    icon: <TrendingUp className="w-4 h-4 text-[#00D4FF]" />,
+    icon: <TrendingUp className="w-4 h-4 text-accent2-ink" />,
     title: "Lead Converted",
     subtitle: "+$2,400 revenue",
     color: "#00D4FF",
@@ -39,7 +39,7 @@ const floatingCards = [
     delay: 1,
   },
   {
-    icon: <Users className="w-4 h-4 text-[#00FF87]" />,
+    icon: <Users className="w-4 h-4 text-accent-ink" />,
     title: "Campaign Sent",
     subtitle: "98.2% delivered",
     color: "#00FF87",
@@ -60,11 +60,11 @@ export default function Hero() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       {/* Background effects */}
       <div className="absolute inset-0 grid-pattern opacity-40" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050508]/50 to-[#050508]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--app-bg)]/50 to-[var(--app-bg)]" />
 
       {/* Radial glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-[#00FF87]/8 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-[#00D4FF]/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-accent/8 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-accent2/5 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-[80px] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -78,7 +78,7 @@ export default function Hero() {
               transition={{ duration: 0.5 }}
             >
               <span className="section-badge">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00FF87] animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
                 AI-Powered WhatsApp Automation
               </span>
             </motion.div>
@@ -118,7 +118,7 @@ export default function Hero() {
             >
               {["AI Chatbots", "Bulk Campaigns", "CRM Built-in", "Auto Follow-ups", "Analytics"].map((f) => (
                 <span key={f} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white/70">
-                  <CheckCircle className="w-3 h-3 text-[#00FF87]" />
+                  <CheckCircle className="w-3 h-3 text-accent-ink" />
                   {f}
                 </span>
               ))}
@@ -152,7 +152,7 @@ export default function Hero() {
                 {[1, 2, 3, 4, 5].map((i) => (
                   <div
                     key={i}
-                    className="w-8 h-8 rounded-full border-2 border-[#050508] bg-gradient-to-br from-[#00FF87]/30 to-[#00D4FF]/30 flex items-center justify-center text-xs font-bold"
+                    className="w-8 h-8 rounded-full border-2 border-[var(--app-bg)] bg-gradient-to-br from-accent/30 to-accent2/30 flex items-center justify-center text-xs font-bold"
                   >
                     {String.fromCharCode(64 + i)}
                   </div>
@@ -187,12 +187,12 @@ export default function Hero() {
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-red-400" />
                       <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                      <div className="w-3 h-3 rounded-full bg-[#00FF87]" />
+                      <div className="w-3 h-3 rounded-full bg-accent" />
                     </div>
-                    <div className="text-xs text-white/40 font-mono">WhatsFlow AI — Dashboard</div>
+                    <div className="text-xs text-white/40 font-mono">Neura Chat — Dashboard</div>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00FF87] animate-pulse" />
-                      <span className="text-xs text-[#00FF87]">Live</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                      <span className="text-xs text-accent-ink">Live</span>
                     </div>
                   </div>
 
@@ -206,7 +206,7 @@ export default function Hero() {
                       <div key={s.label} className="bg-white/5 rounded-lg p-3 border border-white/8">
                         <div className="text-xs text-white/50 mb-1">{s.label}</div>
                         <div className="text-lg font-bold">{s.value}</div>
-                        <div className="text-xs text-[#00FF87] font-medium mt-0.5">{s.change}</div>
+                        <div className="text-xs text-accent-ink font-medium mt-0.5">{s.change}</div>
                       </div>
                     ))}
                   </div>
@@ -242,7 +242,7 @@ export default function Hero() {
                       { name: "James K.", msg: "What's the delivery time?", time: "2m", status: "Resolved" },
                     ].map((c) => (
                       <div key={c.name} className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#00FF87]/30 to-[#00D4FF]/30 flex-shrink-0 flex items-center justify-center text-xs font-bold">
+                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-accent/30 to-accent2/30 flex-shrink-0 flex items-center justify-center text-xs font-bold">
                           {c.name[0]}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -252,7 +252,7 @@ export default function Hero() {
                           </div>
                           <div className="text-[10px] text-white/50 truncate">{c.msg}</div>
                         </div>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.status === "AI Replying" ? "bg-[#00FF87]/10 text-[#00FF87]" : "bg-white/5 text-white/40"}`}>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.status === "AI Replying" ? "bg-accent/10 text-accent-ink" : "bg-white/5 text-white/40"}`}>
                           {c.status}
                         </span>
                       </div>
@@ -295,7 +295,7 @@ export default function Hero() {
           className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5 rounded-2xl overflow-hidden border border-white/10"
         >
           {stats.map((stat) => (
-            <div key={stat.label} className="bg-[#0A0A0F] px-8 py-6 text-center hover:bg-white/5 transition-colors">
+            <div key={stat.label} className="bg-[var(--surface-1)] px-8 py-6 text-center hover:bg-white/5 transition-colors">
               <div className="text-3xl font-black gradient-text-green mb-1">{stat.value}</div>
               <div className="text-sm text-white/50">{stat.label}</div>
             </div>

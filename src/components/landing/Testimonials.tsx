@@ -10,7 +10,7 @@ const testimonials = [
     avatar: "P",
     color: "#00FF87",
     rating: 5,
-    text: "WhatsFlow AI transformed our Shopify store's customer service. We automated 90% of support queries and recovered 3x more abandoned carts. Revenue jumped 42% in the first month.",
+    text: "Neura Chat transformed our Shopify store's customer service. We automated 90% of support queries and recovered 3x more abandoned carts. Revenue jumped 42% in the first month.",
     metric: "+42% Revenue",
   },
   {
@@ -46,7 +46,7 @@ const testimonials = [
     avatar: "C",
     color: "#EC4899",
     rating: 5,
-    text: "WhatsFlow handles reservations, menu inquiries, and order updates across 8 locations. Response time went from 4 hours to 3 seconds. Customer satisfaction is at 98%.",
+    text: "Neura Chat handles reservations, menu inquiries, and order updates across 8 locations. Response time went from 4 hours to 3 seconds. Customer satisfaction is at 98%.",
     metric: "98% CSAT Score",
   },
   {
@@ -65,8 +65,8 @@ export default function Testimonials() {
     <section id="testimonials" className="relative py-28 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0A0A14]/40 to-transparent" />
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#00FF87]/4 rounded-full blur-[120px]" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[#00D4FF]/4 rounded-full blur-[100px]" />
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-accent/4 rounded-full blur-[120px]" />
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-accent2/4 rounded-full blur-[100px]" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -80,7 +80,7 @@ export default function Testimonials() {
           <span className="section-badge">Testimonials</span>
           <h2 className="text-4xl md:text-5xl font-bold">
             Businesses{" "}
-            <span className="gradient-text-green">love WhatsFlow AI</span>
+            <span className="gradient-text-green">love Neura Chat</span>
           </h2>
           <p className="text-lg text-white/60 max-w-xl mx-auto">
             Real results from real businesses. Join 50,000+ companies automating their growth.

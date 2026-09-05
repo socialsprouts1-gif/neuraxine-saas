@@ -1,9 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4 entrypoint. The v3 directives (@tailwind base/components/
+   utilities) still emit utilities under v4 but silently skip preflight and
+   the theme layer, which leaves form controls, tables and headings with
+   default browser styling. */
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
 
+/* Registering the accents as real theme colours is what lets `bg-accent/10`
+   carry its opacity modifier: an arbitrary value — bg-[var(--accent)]/10 —
+   silently drops the /10 and paints a solid fill, because Tailwind cannot
+   tell a bare var() is a colour.
+
+   These must be literals, not var() indirections. Given a literal, Tailwind
+   emits color-mix(in oklab, var(--color-accent) N%, transparent); given a
+   var() it gives up on the modifier again. Light mode then overrides
+   --color-accent itself below, the same trick --color-white uses. */
+@theme {
+  --color-accent: #00FF87;
+  --color-accent-ink: #00FF87;
+  --color-accent2: #00D4FF;
+  --color-accent2-ink: #00D4FF;
+}
+
+/* Theming
+   ----------------------------------------------------------------------
+   Two levers do almost all the work here.
+
+   1. --color-white is Tailwind v4's own token. Every `text-white/50`,
+      `bg-white/4` and `border-white/10` in the app compiles to
+      color-mix(in oklab, var(--color-white) N%, transparent), so redefining
+      it flips several hundred utilities across ~48 routes at once. In light
+      mode it becomes ink, which is what those utilities always meant:
+      "a contrast overlay against the page", not "the colour white".
+
+   2. The surface variables replace the hardcoded hexes that used to be
+      written inline as bg-[#0A0A0F] and friends.
+
+   Anything that must not flip — the dark text on a green button — stays a
+   literal hex, because #00FF87 is bright in both themes. */
 :root {
   --brand-green: #00FF87;
   --brand-blue: #00D4FF;
@@ -12,6 +47,62 @@
   --dark-900: #0A0A0F;
   --dark-800: #141420;
   --dark-700: #1E1E35;
+
+  --app-bg: #050508;
+  --surface-1: #0A0A0F;
+  --surface-2: #08080C;
+  --surface-3: #141420;
+
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  /* The green glow reads as energy on black and as smudge on white. */
+  --btn-glow: 0 0 20px rgba(0, 255, 135, 0.4), 0 0 60px rgba(0, 255, 135, 0.15);
+  --btn-glow-hover: 0 0 40px rgba(0, 255, 135, 0.5), 0 0 100px rgba(0, 255, 135, 0.2);
+
+  /* #00FF87 as text on white is barely legible, so light mode darkens the
+     accent wherever it carries text rather than fill. */
+  --accent: #00FF87;
+  --accent-ink: #00FF87;
+  --accent-strong: #00CC6A;
+  --accent-2: #00D4FF;
+  --accent-2-ink: #00D4FF;
+  --scrollbar: rgba(0, 255, 135, 0.3);
+
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --color-white: #0B1F17;
+
+  --app-bg: #F5F7F6;
+  --surface-1: #FFFFFF;
+  --surface-2: #EEF2F0;
+  --surface-3: #E4EAE7;
+
+  --card-bg: #FFFFFF;
+  --card-border: rgba(11, 31, 23, 0.12);
+  --card-shadow: 0 1px 2px rgba(11, 31, 23, 0.06), 0 8px 24px rgba(11, 31, 23, 0.06);
+
+  --btn-glow: 0 1px 2px rgba(11, 31, 23, 0.12);
+  --btn-glow-hover: 0 4px 12px rgba(0, 150, 80, 0.25);
+
+  /* Fill stays saturated enough for #050508 text to sit on it at ~7:1;
+     the -ink variants are the ones that have to survive on white. */
+  --accent: #00B863;
+  --accent-ink: #05793F;
+  --accent-strong: #00A458;
+  --accent-2: #00A9CC;
+  --accent-2-ink: #0B6E86;
+
+  --color-accent: #00B863;
+  --color-accent-ink: #05793F;
+  --color-accent2: #00A9CC;
+  --color-accent2-ink: #0B6E86;
+  --scrollbar: rgba(11, 31, 23, 0.25);
+
+  color-scheme: light;
 }
 
 * {
@@ -21,12 +112,12 @@
 html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 255, 135, 0.3) transparent;
+  scrollbar-color: var(--scrollbar) transparent;
 }
 
 body {
-  background-color: var(--dark-950);
-  color: #ffffff;
+  background-color: var(--app-bg);
+  color: var(--color-white);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -42,23 +133,23 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 135, 0.3);
+  background: var(--scrollbar);
   border-radius: 4px;
 }
 
 @layer components {
   .glass {
     backdrop-filter: blur(12px);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
   }
 
   .glass-card {
     backdrop-filter: blur(20px);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
     border-radius: 1rem;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+    box-shadow: var(--card-shadow);
   }
 
   .gradient-text-green {
@@ -83,16 +174,16 @@ body {
     border-radius: 0.75rem;
     font-weight: 600;
     color: #050508;
-    background: #00FF87;
+    background: var(--accent);
     transition: all 0.2s;
-    box-shadow: 0 0 20px rgba(0,255,135,0.4), 0 0 60px rgba(0,255,135,0.15);
+    box-shadow: var(--btn-glow);
     cursor: pointer;
     border: none;
   }
 
   .btn-primary:hover {
-    background: #00CC6A;
-    box-shadow: 0 0 40px rgba(0,255,135,0.5), 0 0 100px rgba(0,255,135,0.2);
+    background: var(--accent-strong);
+    box-shadow: var(--btn-glow-hover);
     transform: translateY(-1px);
   }
 
@@ -103,17 +194,17 @@ body {
     padding: 0.75rem 1.5rem;
     border-radius: 0.75rem;
     font-weight: 600;
-    color: white;
+    color: var(--color-white);
     backdrop-filter: blur(12px);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(0,255,135,0.3);
+    background: var(--card-bg);
+    border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent);
     transition: all 0.2s;
     cursor: pointer;
   }
 
   .btn-secondary:hover {
-    border-color: rgba(0,255,135,0.6);
-    background: rgba(0,255,135,0.05);
+    border-color: color-mix(in oklab, var(--accent) 60%, transparent);
+    background: color-mix(in oklab, var(--accent) 8%, transparent);
   }
 
   .section-badge {
@@ -126,9 +217,9 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    background: rgba(0,255,135,0.1);
-    border: 1px solid rgba(0,255,135,0.3);
-    color: #00FF87;
+    background: color-mix(in oklab, var(--accent) 12%, transparent);
+    border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent);
+    color: var(--accent-ink);
   }
 
   .sidebar-item {
@@ -139,15 +230,15 @@ body {
     border-radius: 0.75rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: rgba(255,255,255,0.6);
+    color: color-mix(in oklab, var(--color-white) 62%, transparent);
     transition: all 0.2s;
     cursor: pointer;
     text-decoration: none;
   }
 
   .sidebar-item:hover {
-    color: white;
-    background: rgba(255,255,255,0.05);
+    color: var(--color-white);
+    background: color-mix(in oklab, var(--color-white) 6%, transparent);
   }
 
   .sidebar-item-active {
@@ -158,9 +249,9 @@ body {
     border-radius: 0.75rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #00FF87;
-    background: rgba(0,255,135,0.1);
-    border: 1px solid rgba(0,255,135,0.2);
+    color: var(--accent-ink);
+    background: color-mix(in oklab, var(--accent) 12%, transparent);
+    border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
     cursor: pointer;
     text-decoration: none;
   }
@@ -172,9 +263,9 @@ body {
     border-radius: 0.5rem;
     font-size: 0.75rem;
     font-weight: 500;
-    background: rgba(0,255,135,0.1);
-    color: #00FF87;
-    border: 1px solid rgba(0,255,135,0.2);
+    background: color-mix(in oklab, var(--accent) 12%, transparent);
+    color: var(--accent-ink);
+    border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
   }
 
   .tag-blue {
@@ -234,7 +325,7 @@ body {
 }
 
 .dot-pattern {
-  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-image: radial-gradient(color-mix(in oklab, var(--color-white) 8%, transparent) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
@@ -278,10 +369,10 @@ body {
 
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: rgba(255, 255, 255, 0.06);
+  stroke: color-mix(in oklab, var(--color-white) 8%, transparent);
 }
 
 .recharts-text {
-  fill: rgba(255, 255, 255, 0.5) !important;
+  fill: color-mix(in oklab, var(--color-white) 55%, transparent) !important;
   font-size: 12px;
 }
