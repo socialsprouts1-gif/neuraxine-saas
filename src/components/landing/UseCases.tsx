@@ -76,7 +76,7 @@ const useCases = [
     label: "Agencies",
     color: "#EC4899",
     title: "Manage All Clients on One Platform",
-    desc: "White-label WhatsFlow for your clients. Create separate workspaces, manage billing, and scale your agency revenue.",
+    desc: "White-label Neura Chat for your clients. Create separate workspaces, manage billing, and scale your agency revenue.",
     metrics: [
       { value: "Unlimited", label: "Client Workspaces" },
       { value: "100%", label: "White-labeled" },
@@ -122,7 +122,7 @@ export default function UseCases() {
             <span className="gradient-text-green">industry</span>
           </h2>
           <p className="text-lg text-white/60 max-w-xl mx-auto">
-            WhatsFlow AI adapts to your business type with pre-built flows and industry-specific templates.
+            Neura Chat adapts to your business type with pre-built flows and industry-specific templates.
           </p>
         </motion.div>
 
