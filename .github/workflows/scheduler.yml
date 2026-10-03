@@ -1,0 +1,42 @@
+# The product's heartbeat.
+#
+# Campaigns, appointment reminders, recurring invoices and paused chatbot
+# flows all wait for something to poke them. Vercel's Hobby plan runs a
+# cron once a day, which is not a schedule a message queue can live on, so
+# this runs hourly and costs nothing on a free GitHub account.
+#
+# Two repository secrets are needed — Settings → Secrets and variables →
+# Actions:
+#   APP_URL      https://neurachat.in   (no trailing slash)
+#   CRON_SECRET  the same value as the CRON_SECRET in Vercel
+#
+# Hourly because that is what the free Actions minutes comfortably cover.
+# For minute-level dispatch use an external pinger (cron-job.org and
+# similar are free) against the same URL, or move the schedule below to
+# */5 once the repository has the minutes for it.
+
+name: Scheduler
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  # So it can be tested without waiting for the hour.
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run scheduled jobs
+        run: |
+          if [ -z "${{ secrets.APP_URL }}" ] || [ -z "${{ secrets.CRON_SECRET }}" ]; then
+            echo "APP_URL and CRON_SECRET must both be set as repository secrets."
+            exit 1
+          fi
+
+          # --fail-with-body so a 4xx/5xx fails the step *and* prints the
+          # reason; a red run with an empty log says nothing worth having.
+          curl --fail-with-body --silent --show-error --location \
+            --max-time 120 \
+            --header "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/run-all"

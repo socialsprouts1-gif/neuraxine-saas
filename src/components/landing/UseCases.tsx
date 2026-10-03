@@ -18,7 +18,7 @@ const useCases = [
     id: "ecommerce",
     icon: ShoppingCart,
     label: "Ecommerce",
-    color: "#00FF87",
+    color: "#7C3AED",
     title: "Automate Your Entire Store on WhatsApp",
     desc: "Send order confirmations, abandoned cart recovery messages, delivery updates, and product recommendations automatically.",
     metrics: [
@@ -32,7 +32,7 @@ const useCases = [
     id: "coaching",
     icon: GraduationCap,
     label: "Coaches",
-    color: "#00D4FF",
+    color: "#2563EB",
     title: "Scale Your Coaching Business 10x",
     desc: "Automate lead qualification, free session bookings, follow-up sequences, and course delivery through WhatsApp.",
     metrics: [
@@ -46,7 +46,7 @@ const useCases = [
     id: "healthcare",
     icon: Stethoscope,
     label: "Healthcare",
-    color: "#A855F7",
+    color: "#C026D3",
     title: "Streamline Patient Communication",
     desc: "Appointment reminders, post-visit follow-ups, prescription reminders, and patient support — fully automated.",
     metrics: [
@@ -60,7 +60,7 @@ const useCases = [
     id: "realestate",
     icon: Home,
     label: "Real Estate",
-    color: "#F59E0B",
+    color: "#B45309",
     title: "Convert More Property Leads",
     desc: "AI qualifies buyer/seller leads, schedules viewings, sends property matches, and nurtures prospects to close.",
     metrics: [
@@ -74,9 +74,9 @@ const useCases = [
     id: "agencies",
     icon: Building2,
     label: "Agencies",
-    color: "#EC4899",
+    color: "#DB2777",
     title: "Manage All Clients on One Platform",
-    desc: "White-label WhatsFlow for your clients. Create separate workspaces, manage billing, and scale your agency revenue.",
+    desc: "White-label Neura Chat for your clients. Create separate workspaces, manage billing, and scale your agency revenue.",
     metrics: [
       { value: "Unlimited", label: "Client Workspaces" },
       { value: "100%", label: "White-labeled" },
@@ -88,7 +88,7 @@ const useCases = [
     id: "education",
     icon: GraduationCap,
     label: "Education",
-    color: "#00FF87",
+    color: "#7C3AED",
     title: "Keep Students Engaged & Informed",
     desc: "Admission follow-ups, class reminders, assignment notifications, and parent communication — automated via WhatsApp.",
     metrics: [
@@ -122,7 +122,7 @@ export default function UseCases() {
             <span className="gradient-text-green">industry</span>
           </h2>
           <p className="text-lg text-white/60 max-w-xl mx-auto">
-            WhatsFlow AI adapts to your business type with pre-built flows and industry-specific templates.
+            Neura Chat adapts to your business type with pre-built flows and industry-specific templates.
           </p>
         </motion.div>
 
@@ -190,8 +190,8 @@ export default function UseCases() {
                 ))}
               </div>
 
-              <a href="/auth/register" className="btn-primary inline-flex">
-                Start Free Trial
+              <a href="#pricing" className="btn-primary inline-flex">
+                Choose a plan
               </a>
             </div>
 

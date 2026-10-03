@@ -1,9 +1,63 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Fonts are loaded by next/font in app/layout.tsx, which self-hosts them
+   and sets --font-sans and --font-mono. Loading them here instead blocked
+   the first paint on a round trip to Google. */
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4 entrypoint. The v3 directives (@tailwind base/components/
+   utilities) still emit utilities under v4 but silently skip preflight and
+   the theme layer, which leaves form controls, tables and headings with
+   default browser styling. */
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
 
+/* Registering the accents as real theme colours is what lets `bg-accent/10`
+   carry its opacity modifier: an arbitrary value — bg-[var(--accent)]/10 —
+   silently drops the /10 and paints a solid fill, because Tailwind cannot
+   tell a bare var() is a colour.
+
+   These must be literals, not var() indirections. Given a literal, Tailwind
+   emits color-mix(in oklab, var(--color-accent) N%, transparent); given a
+   var() it gives up on the modifier again. Light mode then overrides
+   --color-accent itself below, the same trick --color-white uses. */
+@theme {
+  /* The type scale, one step up from Tailwind's defaults.
+     ---------------------------------------------------------------------
+     This is a business tool people read all day, largely on laptops, and
+     it was set almost entirely in 11px and 12px. That is fine for a label
+     and wrong for the sentence that tells somebody why their campaign
+     failed. Raising the tokens lifts every text-xs and text-sm in the
+     product at once — about a thousand of them — rather than leaving the
+     legibility of each screen to whoever wrote it.
+
+     Line heights come with them: Tailwind pairs each size with one, and
+     changing the size alone leaves the old leading behind and makes the
+     bigger text look more cramped, not less. */
+  --text-xs: 0.8125rem;      /* 13px, was 12 */
+  --text-xs--line-height: 1.125rem;
+  --text-sm: 0.9375rem;      /* 15px, was 14 */
+  --text-sm--line-height: 1.375rem;
+
+  --color-accent: #00FF87;
+  --color-accent-ink: #00FF87;
+  --color-accent2: #00D4FF;
+  --color-accent2-ink: #00D4FF;
+}
+
+/* Theming
+   ----------------------------------------------------------------------
+   Two levers do almost all the work here.
+
+   1. --color-white is Tailwind v4's own token. Every `text-white/50`,
+      `bg-white/4` and `border-white/10` in the app compiles to
+      color-mix(in oklab, var(--color-white) N%, transparent), so redefining
+      it flips several hundred utilities across ~48 routes at once. In light
+      mode it becomes ink, which is what those utilities always meant:
+      "a contrast overlay against the page", not "the colour white".
+
+   2. The surface variables replace the hardcoded hexes that used to be
+      written inline as bg-[#0A0A0F] and friends.
+
+   Anything that must not flip — the dark text on a green button — stays a
+   literal hex, because #00FF87 is bright in both themes. */
 :root {
   --brand-green: #00FF87;
   --brand-blue: #00D4FF;
@@ -12,6 +66,62 @@
   --dark-900: #0A0A0F;
   --dark-800: #141420;
   --dark-700: #1E1E35;
+
+  --app-bg: #050508;
+  --surface-1: #0A0A0F;
+  --surface-2: #08080C;
+  --surface-3: #141420;
+
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  /* The green glow reads as energy on black and as smudge on white. */
+  --btn-glow: 0 0 20px rgba(0, 255, 135, 0.4), 0 0 60px rgba(0, 255, 135, 0.15);
+  --btn-glow-hover: 0 0 40px rgba(0, 255, 135, 0.5), 0 0 100px rgba(0, 255, 135, 0.2);
+
+  /* #00FF87 as text on white is barely legible, so light mode darkens the
+     accent wherever it carries text rather than fill. */
+  --accent: #00FF87;
+  --accent-ink: #00FF87;
+  --accent-strong: #00CC6A;
+  --accent-2: #00D4FF;
+  --accent-2-ink: #00D4FF;
+  --scrollbar: rgba(0, 255, 135, 0.3);
+
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --color-white: #0B1F17;
+
+  --app-bg: #F5F7F6;
+  --surface-1: #FFFFFF;
+  --surface-2: #EEF2F0;
+  --surface-3: #E4EAE7;
+
+  --card-bg: #FFFFFF;
+  --card-border: rgba(11, 31, 23, 0.12);
+  --card-shadow: 0 1px 2px rgba(11, 31, 23, 0.06), 0 8px 24px rgba(11, 31, 23, 0.06);
+
+  --btn-glow: 0 1px 2px rgba(11, 31, 23, 0.12);
+  --btn-glow-hover: 0 4px 12px rgba(0, 150, 80, 0.25);
+
+  /* Fill stays saturated enough for #050508 text to sit on it at ~7:1;
+     the -ink variants are the ones that have to survive on white. */
+  --accent: #00B863;
+  --accent-ink: #05793F;
+  --accent-strong: #00A458;
+  --accent-2: #00A9CC;
+  --accent-2-ink: #0B6E86;
+
+  --color-accent: #00B863;
+  --color-accent-ink: #05793F;
+  --color-accent2: #00A9CC;
+  --color-accent2-ink: #0B6E86;
+  --scrollbar: rgba(11, 31, 23, 0.25);
+
+  color-scheme: light;
 }
 
 * {
@@ -21,13 +131,13 @@
 html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 255, 135, 0.3) transparent;
+  scrollbar-color: var(--scrollbar) transparent;
 }
 
 body {
-  background-color: var(--dark-950);
-  color: #ffffff;
-  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--app-bg);
+  color: var(--color-white);
+  font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -42,23 +152,23 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 135, 0.3);
+  background: var(--scrollbar);
   border-radius: 4px;
 }
 
 @layer components {
   .glass {
     backdrop-filter: blur(12px);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
   }
 
   .glass-card {
     backdrop-filter: blur(20px);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
     border-radius: 1rem;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+    box-shadow: var(--card-shadow);
   }
 
   .gradient-text-green {
@@ -83,16 +193,16 @@ body {
     border-radius: 0.75rem;
     font-weight: 600;
     color: #050508;
-    background: #00FF87;
+    background: var(--accent);
     transition: all 0.2s;
-    box-shadow: 0 0 20px rgba(0,255,135,0.4), 0 0 60px rgba(0,255,135,0.15);
+    box-shadow: var(--btn-glow);
     cursor: pointer;
     border: none;
   }
 
   .btn-primary:hover {
-    background: #00CC6A;
-    box-shadow: 0 0 40px rgba(0,255,135,0.5), 0 0 100px rgba(0,255,135,0.2);
+    background: var(--accent-strong);
+    box-shadow: var(--btn-glow-hover);
     transform: translateY(-1px);
   }
 
@@ -103,17 +213,97 @@ body {
     padding: 0.75rem 1.5rem;
     border-radius: 0.75rem;
     font-weight: 600;
-    color: white;
+    color: var(--color-white);
     backdrop-filter: blur(12px);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(0,255,135,0.3);
+    background: var(--card-bg);
+    border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent);
     transition: all 0.2s;
     cursor: pointer;
   }
 
   .btn-secondary:hover {
-    border-color: rgba(0,255,135,0.6);
-    background: rgba(0,255,135,0.05);
+    border-color: color-mix(in oklab, var(--accent) 60%, transparent);
+    background: color-mix(in oklab, var(--accent) 8%, transparent);
+  }
+
+  /* The third tier, and the one the app was missing.
+     ---------------------------------------------------------------------
+     Every button in the product was btn-primary, so a card offering five
+     things to do rendered five solid neon buttons and the reader had to
+     work out for themselves which one moved the parcel along. Green is
+     the loudest thing on the page; spending it on all five spends it on
+     none.
+
+     This is deliberately colourless. Sitting next to one green button it
+     reads as "also available" without competing, which is the whole job. */
+  .btn-quiet {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    color: color-mix(in oklab, var(--color-white) 75%, transparent);
+    background: color-mix(in oklab, var(--color-white) 5%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-white) 12%, transparent);
+    transition: all 0.18s;
+    cursor: pointer;
+  }
+
+  .btn-quiet:hover {
+    color: var(--color-white);
+    background: color-mix(in oklab, var(--color-white) 9%, transparent);
+    border-color: color-mix(in oklab, var(--color-white) 24%, transparent);
+  }
+
+  /* The one that deletes something.
+     ---------------------------------------------------------------------
+     "Delete draft" and "Cancel" rendered in solid neon green, which made
+     the most destructive thing on the row also the most inviting. This
+     sits back like btn-quiet and only shows its colour under the pointer,
+     so it is findable without being the thing the eye lands on first. */
+  .btn-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    color: color-mix(in oklab, #F87171 78%, var(--color-white));
+    background: color-mix(in oklab, var(--color-white) 4%, transparent);
+    border: 1px solid color-mix(in oklab, #F87171 22%, transparent);
+    transition: all 0.18s;
+    cursor: pointer;
+  }
+
+  .btn-danger:hover {
+    color: #FCA5A5;
+    background: color-mix(in oklab, #F87171 14%, transparent);
+    border-color: color-mix(in oklab, #F87171 55%, transparent);
+  }
+
+  /* Small enough to sit in a row inside a card.
+     ---------------------------------------------------------------------
+     The glow is the other half of why a list of these looked cheap: a
+     60px neon halo is right under a landing-page call to action and wrong
+     under a 28px button repeated six times down a page. Same for the 1px
+     hover lift, which at this size reads as the row twitching. */
+  .btn-compact {
+    padding: 0.4375rem 0.875rem;
+    border-radius: 0.625rem;
+    font-size: 0.75rem;
+    line-height: 1.1;
+    gap: 0.375rem;
+    box-shadow: none;
+  }
+
+  .btn-compact:hover {
+    box-shadow: none;
+    transform: none;
+  }
+
+  .btn-primary.btn-compact:hover {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent) 45%, transparent);
   }
 
   .section-badge {
@@ -126,9 +316,9 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    background: rgba(0,255,135,0.1);
-    border: 1px solid rgba(0,255,135,0.3);
-    color: #00FF87;
+    background: color-mix(in oklab, var(--accent) 12%, transparent);
+    border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent);
+    color: var(--accent-ink);
   }
 
   .sidebar-item {
@@ -139,15 +329,15 @@ body {
     border-radius: 0.75rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: rgba(255,255,255,0.6);
+    color: color-mix(in oklab, var(--color-white) 62%, transparent);
     transition: all 0.2s;
     cursor: pointer;
     text-decoration: none;
   }
 
   .sidebar-item:hover {
-    color: white;
-    background: rgba(255,255,255,0.05);
+    color: var(--color-white);
+    background: color-mix(in oklab, var(--color-white) 6%, transparent);
   }
 
   .sidebar-item-active {
@@ -158,9 +348,9 @@ body {
     border-radius: 0.75rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #00FF87;
-    background: rgba(0,255,135,0.1);
-    border: 1px solid rgba(0,255,135,0.2);
+    color: var(--accent-ink);
+    background: color-mix(in oklab, var(--accent) 12%, transparent);
+    border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
     cursor: pointer;
     text-decoration: none;
   }
@@ -172,9 +362,9 @@ body {
     border-radius: 0.5rem;
     font-size: 0.75rem;
     font-weight: 500;
-    background: rgba(0,255,135,0.1);
-    color: #00FF87;
-    border: 1px solid rgba(0,255,135,0.2);
+    background: color-mix(in oklab, var(--accent) 12%, transparent);
+    color: var(--accent-ink);
+    border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
   }
 
   .tag-blue {
@@ -234,7 +424,7 @@ body {
 }
 
 .dot-pattern {
-  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-image: radial-gradient(color-mix(in oklab, var(--color-white) 8%, transparent) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
@@ -278,10 +468,284 @@ body {
 
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: rgba(255, 255, 255, 0.06);
+  stroke: color-mix(in oklab, var(--color-white) 8%, transparent);
 }
 
 .recharts-text {
-  fill: rgba(255, 255, 255, 0.5) !important;
+  fill: color-mix(in oklab, var(--color-white) 55%, transparent) !important;
   font-size: 12px;
+}
+
+/* The mobile navigation drawer sliding in from the left. Short enough to
+   feel instant; long enough that it reads as a drawer rather than a flash. */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Nothing should scroll the page sideways.
+   A single element a few pixels too wide — an absolutely positioned card,
+   a long unbroken word, a table that forgot its scroll container — makes
+   the whole page slide under the thumb on a phone, which reads as the site
+   being broken rather than as one element being wrong. Catching it here
+   means one bad element clips instead of moving everything. */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* A pasted URL, an API key, a long email address: without this they push
+   their container wider than the screen instead of wrapping. */
+body {
+  overflow-wrap: break-word;
+}
+
+/* Tap targets. Under about 40px a control is genuinely hard to hit, and
+   the inbox was full of 28px icon buttons that were fine with a mouse. */
+@media (max-width: 767px) {
+  button,
+  [role="button"],
+  a.btn-primary,
+  a.btn-secondary {
+    min-height: 40px;
+  }
+
+  /* Except where the button is deliberately inline in a line of text. */
+  button.inline-hit,
+  [role="button"].inline-hit {
+    min-height: 0;
+  }
+}
+
+/* A due reminder arriving.
+   Comes in from the right, which is where it sits — sliding from anywhere
+   else reads as something moving rather than something appearing. Honours
+   a reduced-motion preference by simply being there. */
+@keyframes reminderIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.reminder-pop {
+  animation: reminderIn 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reminder-pop {
+    animation: none;
+  }
+}
+
+/* The marketing site
+   ======================================================================
+   The product is dark. The public site is light, warm and violet — a
+   different room for a different reader: somebody who has never heard of
+   this product and is deciding in four seconds whether it looks like a
+   real company.
+
+   It is one scope rather than a rewrite because of the lever described at
+   the top of this file: --color-white is Tailwind's own token, so every
+   text-white/60 and border-white/10 inside .marketing becomes ink at that
+   opacity, which is what those utilities always meant. Redefining eight
+   variables re-themes eleven sections; the alternative was editing several
+   hundred class strings and missing some.
+
+   Anything that must stay its own colour inside here — WhatsApp's green,
+   a partner's logo, the white of a chat bubble — is written as a literal,
+   because it is not a theme decision. */
+.marketing {
+  /* Ink, not black: a warm near-black keeps the page from looking like a
+     printed form. Contrast against the lightest surface is 15.8:1. */
+  --color-white: #171226;
+
+  --app-bg: #FAF8FC;
+  --surface-1: #FFFFFF;
+  --surface-2: #F4F1F9;
+  --surface-3: #EDE9F6;
+
+  --card-bg: #FFFFFF;
+  --card-border: rgba(23, 18, 38, 0.07);
+  /* Two shadows: a tight one that seats the card on the page and a wide
+     soft one that lifts it. One alone reads as either a sticker or a blur. */
+  --card-shadow: 0 1px 2px rgba(23, 18, 38, 0.04), 0 12px 32px rgba(23, 18, 38, 0.07);
+
+  --violet: #7C3AED;
+  --violet-deep: #5B21B6;
+  --violet-soft: #A78BFA;
+  --wa-green: #25D366;
+
+  /* Violet is legible as text on white at 5.6:1, so ink and fill are the
+     same value here — unlike the green theme, which needs a darker text
+     variant. */
+  --accent: #7C3AED;
+  --accent-ink: #6D28D9;
+  --accent-strong: #6D28D9;
+  --accent-2: #C026D3;
+  --accent-2-ink: #A21CAF;
+
+  --color-accent: #7C3AED;
+  --color-accent-ink: #6D28D9;
+  --color-accent2: #C026D3;
+  --color-accent2-ink: #A21CAF;
+
+  --btn-glow: 0 8px 20px rgba(109, 40, 217, 0.25);
+  --btn-glow-hover: 0 12px 28px rgba(109, 40, 217, 0.35);
+
+  --scrollbar: rgba(124, 58, 237, 0.35);
+
+  color-scheme: light;
+  background: var(--app-bg);
+  color: var(--color-white);
+}
+
+/* The page itself, before anything is drawn on it.
+   Three light sources — lavender top right, a warm blush left of centre,
+   a cool wash at the foot — so the background has somewhere to be brighter
+   than somewhere else. A flat off-white behind a floating card makes the
+   card look pasted on. */
+.marketing-canvas {
+  position: relative;
+  background:
+    radial-gradient(1100px 620px at 88% -8%, rgba(167, 139, 250, 0.20), transparent 62%),
+    radial-gradient(760px 520px at 8% 4%, rgba(251, 207, 232, 0.24), transparent 60%),
+    radial-gradient(900px 600px at 50% 104%, rgba(196, 181, 253, 0.16), transparent 60%),
+    linear-gradient(180deg, #FDFBFF 0%, #FAF7FC 48%, #F6F2FB 100%);
+}
+
+.marketing .btn-primary {
+  /* White on violet, not the near-black the green theme uses — #050508 on
+     #7C3AED is 3.1:1 and fails, where white is 4.9:1 and passes. */
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 52%, #8B5CF6 100%);
+  border-radius: 9999px;
+  padding: 0.875rem 1.75rem;
+  letter-spacing: -0.01em;
+}
+
+.marketing .btn-primary:hover {
+  background: linear-gradient(135deg, #5B21B6 0%, #6D28D9 52%, #7C3AED 100%);
+  transform: translateY(-1px);
+}
+
+.marketing .btn-secondary {
+  color: var(--color-white);
+  background: #FFFFFF;
+  border: 1px solid rgba(23, 18, 38, 0.10);
+  border-radius: 9999px;
+  padding: 0.875rem 1.75rem;
+  box-shadow: 0 1px 2px rgba(23, 18, 38, 0.05), 0 8px 24px rgba(23, 18, 38, 0.06);
+  backdrop-filter: none;
+}
+
+.marketing .btn-secondary:hover {
+  background: #FFFFFF;
+  border-color: rgba(124, 58, 237, 0.35);
+  box-shadow: 0 2px 4px rgba(23, 18, 38, 0.06), 0 12px 28px rgba(109, 40, 217, 0.14);
+  transform: translateY(-1px);
+}
+
+/* A white pill that sits on the page rather than glowing out of it. */
+.marketing .section-badge {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(23, 18, 38, 0.08);
+  color: color-mix(in oklab, var(--color-white) 62%, transparent);
+  box-shadow: 0 1px 2px rgba(23, 18, 38, 0.04), 0 6px 18px rgba(23, 18, 38, 0.05);
+  backdrop-filter: blur(8px);
+  padding: 0.4375rem 0.875rem;
+}
+
+.marketing .glass-card,
+.marketing .glass {
+  background: #FFFFFF;
+  border: 1px solid var(--card-border);
+  backdrop-filter: none;
+}
+
+/* Every heading accent on the site runs through this one class, so the
+   site changes palette here and nowhere else. Three stops rather than two:
+   indigo into violet into magenta is the run in the reference, and two
+   stops of it lands as a flat purple. */
+.marketing .gradient-text-green,
+.marketing .gradient-text-purple {
+  background: linear-gradient(105deg, #4F46E5 0%, #7C3AED 46%, #C026D3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.marketing .tag-purple {
+  background: rgba(124, 58, 237, 0.10);
+  color: #6D28D9;
+  border-color: rgba(124, 58, 237, 0.22);
+}
+
+.marketing .tag-blue {
+  background: rgba(37, 99, 235, 0.10);
+  color: #1D4ED8;
+  border-color: rgba(37, 99, 235, 0.20);
+}
+
+.marketing .tag-green {
+  background: rgba(22, 163, 74, 0.10);
+  color: #15803D;
+  border-color: rgba(22, 163, 74, 0.20);
+}
+
+/* A green hairline grid is a dark-mode device. Here it is ink at 3%, which
+   gives the eye something to catch without becoming graph paper. */
+.marketing .grid-pattern {
+  background-image:
+    linear-gradient(rgba(23, 18, 38, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 18, 38, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* The neon halo is the single most dark-mode thing in the stylesheet: on
+   white it is a grey smudge under the button. */
+.marketing .animate-glow-pulse {
+  animation: none;
+  box-shadow: var(--btn-glow);
+}
+
+.marketing .animate-neon-pulse {
+  animation: none;
+}
+
+/* A slower, shallower float than the product's. These are large elements
+   near the top of the page and a 12px swing at 6s reads as drifting. */
+@keyframes marketingFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.float-slow { animation: marketingFloat 7s ease-in-out infinite; }
+.float-mid { animation: marketingFloat 6s ease-in-out infinite 0.6s; }
+.float-fast { animation: marketingFloat 5.5s ease-in-out infinite 1.2s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .float-slow, .float-mid, .float-fast { animation: none; }
+}
+
+/* WhatsApp's own chat wallpaper, drawn rather than fetched: a warm paper
+   tone with a faint repeating mark. The real thing is a doodle sheet we
+   have no licence to ship, and a flat beige panel is the tell that this is
+   a mock-up, so this is a neutral texture at the same value. */
+.wa-wallpaper {
+  background-color: #EFE7DE;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(180, 160, 140, 0.16) 1.5px, transparent 1.6px),
+    radial-gradient(circle at 70% 65%, rgba(180, 160, 140, 0.13) 1.5px, transparent 1.6px),
+    radial-gradient(circle at 45% 85%, rgba(180, 160, 140, 0.10) 1.5px, transparent 1.6px);
+  background-size: 52px 52px, 68px 68px, 40px 40px;
 }

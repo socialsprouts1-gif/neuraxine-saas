@@ -1,306 +1,183 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { DEFAULT_HERO, type HeroContent } from "@/lib/site-content";
 import Link from "next/link";
-import {
-  ArrowRight,
-  Play,
-  Zap,
-  MessageCircle,
-  Bot,
-  TrendingUp,
-  Users,
-  CheckCircle,
-} from "lucide-react";
+import { ArrowRight, CalendarCheck, Bot, Send, Database, Clock, BarChart3 } from "lucide-react";
+import { WhatsAppGlyph } from "./BrandGlyphs";
+import HeroShowcase from "./HeroShowcase";
+import { demoTarget, demoHint } from "@/lib/book-demo";
 
-const floatingCards = [
-  {
-    icon: <MessageCircle className="w-4 h-4 text-[#00FF87]" />,
-    title: "AI Reply Sent",
-    subtitle: "Response time: 0.3s",
-    color: "#00FF87",
-    pos: "top-16 -left-8",
-    delay: 0,
-  },
-  {
-    icon: <TrendingUp className="w-4 h-4 text-[#00D4FF]" />,
-    title: "Lead Converted",
-    subtitle: "+$2,400 revenue",
-    color: "#00D4FF",
-    pos: "top-36 -right-12",
-    delay: 0.5,
-  },
-  {
-    icon: <Bot className="w-4 h-4 text-purple-400" />,
-    title: "Chatbot Active",
-    subtitle: "1,247 chats handled",
-    color: "#A855F7",
-    pos: "bottom-24 -left-12",
-    delay: 1,
-  },
-  {
-    icon: <Users className="w-4 h-4 text-[#00FF87]" />,
-    title: "Campaign Sent",
-    subtitle: "98.2% delivered",
-    color: "#00FF87",
-    pos: "bottom-8 -right-8",
-    delay: 1.5,
-  },
+// Icon and tint are layout, not copy, so they stay here and pair with the
+// editable pills by position — the same arrangement the floating cards
+// used. A sixth pill would have no chrome to sit in, so the list is capped
+// at what exists rather than rendering a chip with a blank tile in it.
+const pillChrome = [
+  { icon: Bot, tint: "#7C3AED" },
+  { icon: Send, tint: "#4F46E5" },
+  { icon: Database, tint: "#C026D3" },
+  { icon: Clock, tint: "#2563EB" },
+  { icon: BarChart3, tint: "#9333EA" },
 ];
 
-const stats = [
-  { value: "50K+", label: "Active Businesses" },
-  { value: "2.4B", label: "Messages Automated" },
-  { value: "98.2%", label: "Delivery Rate" },
-  { value: "12x", label: "Faster Response" },
-];
+export default function Hero({
+  content = DEFAULT_HERO,
+  demoUrl = "",
+  whatsappNumber = "",
+}: {
+  content?: HeroContent;
+  /** A Calendly or other booking page. Empty falls back to WhatsApp. */
+  demoUrl?: string;
+  whatsappNumber?: string;
+}) {
+  const demo = demoTarget({ demoUrl, whatsappNumber });
 
-export default function Hero() {
+  const pills = content.pills
+    .slice(0, pillChrome.length)
+    .map((label, i) => ({ label, ...pillChrome[i] }));
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-      {/* Background effects */}
-      <div className="absolute inset-0 grid-pattern opacity-40" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050508]/50 to-[#050508]" />
+    <section className="relative overflow-hidden pt-28 pb-16 lg:pt-32 lg:pb-24">
+      {/* A soft violet bloom behind the handset, and a warm one behind the
+          headline. The cards are white on a near-white page: without
+          something brighter behind them their shadows have nothing to sit
+          against and they flatten into the background. */}
+      <div className="absolute top-[-6rem] right-[-8rem] w-[780px] h-[680px] rounded-full bg-[#A78BFA]/18 blur-[130px] pointer-events-none" />
+      <div className="absolute top-[4rem] left-[-10rem] w-[560px] h-[520px] rounded-full bg-[#FDBA74]/16 blur-[130px] pointer-events-none" />
 
-      {/* Radial glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-[#00FF87]/8 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-[#00D4FF]/5 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-[80px] pointer-events-none" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Content */}
-          <div className="space-y-8">
-            {/* Badge */}
+      <div className="relative max-w-[1400px] mx-auto px-5 sm:px-8">
+        <div className="grid lg:grid-cols-2 xl:grid-cols-[minmax(0,500px)_minmax(0,1fr)] gap-14 lg:gap-8 items-center">
+          {/* ---------------------------------------------------------- */}
+          <div className="space-y-7 max-w-xl">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <span className="section-badge">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00FF87] animate-pulse" />
-                AI-Powered WhatsApp Automation
+              <span className="section-badge normal-case sm:uppercase">
+                <span className="w-6 h-6 rounded-full bg-[#25D366] flex items-center justify-center shrink-0">
+                  <WhatsAppGlyph className="w-3.5 h-3.5 text-[#FFFFFF]" />
+                </span>
+                {content.badge}
               </span>
             </motion.div>
 
-            {/* Headline */}
-            <motion.div
+            <motion.h1
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="space-y-2"
+              transition={{ duration: 0.6, delay: 0.08 }}
+              className="text-[2.75rem] sm:text-6xl xl:text-[4.25rem] font-black leading-[1.03] tracking-[-0.035em]"
             >
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight">
-                Turn WhatsApp Into
-              </h1>
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight gradient-text-green">
-                Your Sales Machine
-              </h1>
-            </motion.div>
+              {content.headline}{" "}
+              <span className="gradient-text-green">{content.headlineAccent}</span>
+            </motion.h1>
 
-            {/* Subheadline */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg text-white/60 max-w-lg leading-relaxed"
+              transition={{ duration: 0.6, delay: 0.16 }}
+              className="text-[17px] sm:text-lg text-white/55 leading-relaxed max-w-lg"
             >
-              Automate customer support, lead generation, sales follow-ups, and
-              marketing campaigns with AI-powered WhatsApp workflows. No code required.
+              {content.subheadline}
             </motion.p>
 
-            {/* Feature pills */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.25 }}
-              className="flex flex-wrap gap-2"
+              transition={{ duration: 0.6, delay: 0.24 }}
+              className="flex flex-wrap gap-3.5 pt-1"
             >
-              {["AI Chatbots", "Bulk Campaigns", "CRM Built-in", "Auto Follow-ups", "Analytics"].map((f) => (
-                <span key={f} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white/70">
-                  <CheckCircle className="w-3 h-3 text-[#00FF87]" />
-                  {f}
-                </span>
-              ))}
-            </motion.div>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-wrap gap-4"
-            >
-              <Link href="/auth/register" className="btn-primary text-base px-7 py-3.5 animate-glow-pulse">
-                Start Free Trial
-                <ArrowRight className="w-4 h-4" />
+              <Link href={content.primaryCta.href} className="btn-primary text-[15px] group">
+                <WhatsAppGlyph className="w-[18px] h-[18px]" />
+                {content.primaryCta.label}
+                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
               </Link>
-              <button className="btn-secondary text-base px-7 py-3.5">
-                <Play className="w-4 h-4 fill-current" />
-                Watch Demo
-              </button>
-            </motion.div>
-
-            {/* Social proof */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex items-center gap-4 pt-2"
-            >
-              <div className="flex -space-x-2">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div
-                    key={i}
-                    className="w-8 h-8 rounded-full border-2 border-[#050508] bg-gradient-to-br from-[#00FF87]/30 to-[#00D4FF]/30 flex items-center justify-center text-xs font-bold"
-                  >
-                    {String.fromCharCode(64 + i)}
-                  </div>
-                ))}
-              </div>
-              <div>
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <span key={s} className="text-yellow-400 text-sm">★</span>
-                  ))}
-                  <span className="text-sm font-semibold ml-1">4.9/5</span>
-                </div>
-                <p className="text-xs text-white/50">Trusted by 50,000+ businesses worldwide</p>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Right — Dashboard Preview */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative"
-          >
-            {/* Main dashboard card */}
-            <div className="relative animate-float">
-              <div className="glass-card p-1 shadow-[0_30px_80px_rgba(0,0,0,0.6)] border-[rgba(0,255,135,0.15)]">
-                {/* Dashboard header */}
-                <div className="bg-[#0F0F18] rounded-xl p-4 space-y-4">
-                  {/* Top bar */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-red-400" />
-                      <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                      <div className="w-3 h-3 rounded-full bg-[#00FF87]" />
-                    </div>
-                    <div className="text-xs text-white/40 font-mono">WhatsFlow AI — Dashboard</div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00FF87] animate-pulse" />
-                      <span className="text-xs text-[#00FF87]">Live</span>
-                    </div>
-                  </div>
-
-                  {/* Stats row */}
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { label: "Messages Today", value: "12,847", change: "+24%" },
-                      { label: "Leads Captured", value: "342", change: "+18%" },
-                      { label: "Revenue", value: "$48.2K", change: "+31%" },
-                    ].map((s) => (
-                      <div key={s.label} className="bg-white/5 rounded-lg p-3 border border-white/8">
-                        <div className="text-xs text-white/50 mb-1">{s.label}</div>
-                        <div className="text-lg font-bold">{s.value}</div>
-                        <div className="text-xs text-[#00FF87] font-medium mt-0.5">{s.change}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Chart area */}
-                  <div className="bg-white/3 rounded-lg p-3 border border-white/6 h-32 relative overflow-hidden">
-                    <div className="text-xs text-white/40 mb-2">Message Volume (7 days)</div>
-                    <svg viewBox="0 0 300 70" className="w-full h-full">
-                      <defs>
-                        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#00FF87" stopOpacity="0.3" />
-                          <stop offset="100%" stopColor="#00FF87" stopOpacity="0" />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M0,50 C20,45 40,30 60,35 C80,40 100,20 120,15 C140,10 160,25 180,20 C200,15 220,5 240,10 C260,15 280,8 300,5 L300,70 L0,70 Z"
-                        fill="url(#chartGrad)"
-                      />
-                      <path
-                        d="M0,50 C20,45 40,30 60,35 C80,40 100,20 120,15 C140,10 160,25 180,20 C200,15 220,5 240,10 C260,15 280,8 300,5"
-                        fill="none"
-                        stroke="#00FF87"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                  </div>
-
-                  {/* Chat preview */}
-                  <div className="bg-white/3 rounded-lg p-3 border border-white/6 space-y-2">
-                    <div className="text-xs text-white/40 mb-1">Live Conversations</div>
-                    {[
-                      { name: "Sarah M.", msg: "Hi! I'd like to order 3 units", time: "now", status: "AI Replying" },
-                      { name: "James K.", msg: "What's the delivery time?", time: "2m", status: "Resolved" },
-                    ].map((c) => (
-                      <div key={c.name} className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#00FF87]/30 to-[#00D4FF]/30 flex-shrink-0 flex items-center justify-center text-xs font-bold">
-                          {c.name[0]}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium">{c.name}</span>
-                            <span className="text-[10px] text-white/40">{c.time}</span>
-                          </div>
-                          <div className="text-[10px] text-white/50 truncate">{c.msg}</div>
-                        </div>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.status === "AI Replying" ? "bg-[#00FF87]/10 text-[#00FF87]" : "bg-white/5 text-white/40"}`}>
-                          {c.status}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Floating notification cards */}
-            {floatingCards.map((card) => (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 + card.delay, duration: 0.4 }}
-                className={`absolute ${card.pos} glass-card px-3 py-2.5 flex items-center gap-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.5)] min-w-[170px]`}
-                style={{ zIndex: 10 }}
-              >
-                <div
-                  className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                  style={{ background: `${card.color}20`, border: `1px solid ${card.color}30` }}
+              {/* Booking, not a video. Opens the configured booking page
+                  when there is one, and WhatsApp when there is not —
+                  which for a WhatsApp automation product is not a
+                  second-best, it is the demo. */}
+              {demo.kind !== "none" && (
+                <a
+                  href={demo.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary text-[15px]"
+                  title={demoHint(demo)}
                 >
-                  {card.icon}
+                  <span className="w-7 h-7 rounded-full bg-white/8 flex items-center justify-center shrink-0">
+                    {demo.kind === "booking" ? (
+                      <CalendarCheck className="w-[15px] h-[15px]" />
+                    ) : (
+                      <WhatsAppGlyph className="w-[15px] h-[15px]" />
+                    )}
+                  </span>
+                  {content.secondaryCta.label}
+                </a>
+              )}
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.32 }}
+              className="flex flex-wrap gap-2.5 pt-2"
+            >
+              {pills.map((pill) => {
+                const Icon = pill.icon;
+                return (
+                  <span
+                    key={pill.label}
+                    className="flex items-center gap-2.5 rounded-2xl bg-[#FFFFFF] pl-2 pr-4 py-2 border border-[rgba(23,18,38,0.06)] shadow-[0_1px_2px_rgba(23,18,38,0.04),0_6px_18px_rgba(23,18,38,0.05)] text-[13.5px] font-semibold"
+                  >
+                    <span
+                      className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ background: `${pill.tint}18` }}
+                    >
+                      <Icon className="w-[15px] h-[15px]" style={{ color: pill.tint }} strokeWidth={2.2} />
+                    </span>
+                    {pill.label}
+                  </span>
+                );
+              })}
+            </motion.div>
+
+            {/* A customer count and a star rating are claims a buyer can
+                check, so they stay switched off until they are true. */}
+            {content.showSocialProof && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="flex items-center gap-4 pt-2"
+              >
+                <div className="flex -space-x-2">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <span
+                      key={i}
+                      className="w-9 h-9 rounded-full border-2 border-[#FFFFFF] bg-gradient-to-br from-[#7C3AED] to-[#C026D3] text-[#FFFFFF] flex items-center justify-center text-xs font-bold"
+                    >
+                      {String.fromCharCode(64 + i)}
+                    </span>
+                  ))}
                 </div>
                 <div>
-                  <div className="text-xs font-semibold">{card.title}</div>
-                  <div className="text-[10px] text-white/50">{card.subtitle}</div>
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <span key={s} className="text-[#F59E0B] text-sm">
+                        ★
+                      </span>
+                    ))}
+                    <span className="text-sm font-semibold ml-1">{content.rating}</span>
+                  </div>
+                  <p className="text-xs text-white/50">{content.socialProofText}</p>
                 </div>
               </motion.div>
-            ))}
-          </motion.div>
-        </div>
+            )}
+          </div>
 
-        {/* Stats bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5 rounded-2xl overflow-hidden border border-white/10"
-        >
-          {stats.map((stat) => (
-            <div key={stat.label} className="bg-[#0A0A0F] px-8 py-6 text-center hover:bg-white/5 transition-colors">
-              <div className="text-3xl font-black gradient-text-green mb-1">{stat.value}</div>
-              <div className="text-sm text-white/50">{stat.label}</div>
-            </div>
-          ))}
-        </motion.div>
+          {/* ---------------------------------------------------------- */}
+          <HeroShowcase />
+        </div>
       </div>
     </section>
   );
