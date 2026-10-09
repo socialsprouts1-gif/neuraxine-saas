@@ -7,8 +7,8 @@ const steps = [
   {
     number: "01",
     icon: Link2,
-    color: "#00FF87",
-    bgColor: "rgba(0,255,135,0.1)",
+    color: "#7C3AED",
+    bgColor: "rgba(124,58,237,0.1)",
     title: "Connect WhatsApp",
     desc: "Link your WhatsApp Business number via the official Meta Cloud API in under 5 minutes. No technical setup needed.",
     highlights: ["Meta Cloud API", "Official WhatsApp", "Instant setup"],
@@ -16,8 +16,8 @@ const steps = [
   {
     number: "02",
     icon: GitBranch,
-    color: "#00D4FF",
-    bgColor: "rgba(0,212,255,0.1)",
+    color: "#2563EB",
+    bgColor: "rgba(37,99,235,0.1)",
     title: "Build Your Automation",
     desc: "Use our visual drag-and-drop builder to create workflows — chatbots, campaigns, follow-ups, CRM rules, and more.",
     highlights: ["No-code builder", "AI chatbots", "Smart triggers"],
@@ -25,8 +25,8 @@ const steps = [
   {
     number: "03",
     icon: TrendingUp,
-    color: "#A855F7",
-    bgColor: "rgba(168,85,247,0.1)",
+    color: "#C026D3",
+    bgColor: "rgba(192,38,211,0.1)",
     title: "Grow with AI",
     desc: "Watch AI engage, qualify, and convert your leads 24/7. Track everything in real-time with our analytics dashboard.",
     highlights: ["24/7 automation", "AI qualification", "Revenue tracking"],
@@ -37,8 +37,8 @@ export default function HowItWorks() {
   return (
     <section id="how-it-works" className="relative py-28 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0A0A14]/50 to-transparent" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00FF87]/4 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#FFFFFF]/70 to-transparent" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/4 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -82,7 +82,7 @@ export default function HowItWorks() {
                       style={{
                         background: step.bgColor,
                         borderColor: `${step.color}30`,
-                        boxShadow: `0 0 40px ${step.color}15`,
+                        boxShadow: `0 10px 26px ${step.color}22`,
                       }}
                     >
                       <step.icon className="w-9 h-9" style={{ color: step.color }} />
@@ -91,8 +91,8 @@ export default function HowItWorks() {
                       className="absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center text-xs font-black border"
                       style={{
                         background: step.color,
-                        color: "#050508",
-                        borderColor: "#050508",
+                        color: "#FFFFFF",
+                        borderColor: "#FFFFFF",
                       }}
                     >
                       {i + 1}
@@ -100,14 +100,14 @@ export default function HowItWorks() {
                   </div>
 
                   {/* Step num label */}
-                  <div className="text-6xl font-black" style={{ color: `${step.color}10` }}>
+                  <div className="text-6xl font-black" style={{ color: `${step.color}1F` }}>
                     {step.number}
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <h3 className="text-2xl font-bold">{step.title}</h3>
-                  <p className="text-white/55 leading-relaxed">{step.desc}</p>
+                  <p className="text-white/60 leading-relaxed">{step.desc}</p>
 
                   {/* Highlights */}
                   <div className="flex flex-wrap gap-2 justify-center mt-4">
