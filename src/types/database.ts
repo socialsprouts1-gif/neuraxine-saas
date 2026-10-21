@@ -1,0 +1,1431 @@
+// Hand-written to match supabase/migrations/*.sql. Regenerate with
+// `supabase gen types typescript` once a live project exists, and reconcile
+// any drift against these migrations.
+//
+// Every table includes `Relationships: []` and the schema includes empty
+// `Views`/`Functions` because @supabase/supabase-js's client generic only
+// resolves table types when the schema structurally satisfies its
+// GenericSchema constraint — omitting these makes every `.from(...)` call
+// silently type as `never` instead of erroring.
+
+import type {
+  AddOn,
+  Coupon,
+  Order,
+  Plan,
+  PlatformSetting,
+  Subscription,
+  SupportTicket,
+  WebhookLog,
+} from "./admin";
+import type {
+  AiAssistant,
+  AssistantKnowledge,
+  OrgInvite,
+  Profile,
+  ConversationNote,
+  CampaignStep,
+  WhatsappFlow,
+  FlowSend,
+  FlowResponse,
+  Meeting,
+  ScheduledMessage,
+  GroupBroadcast,
+  Invoice,
+  InvoiceItem,
+  InvoiceSettings,
+  RecurringInvoice,
+  StoreOrder,
+  StoreOrderItem,
+  PaymentSettings,
+  AppointmentType,
+  AppointmentSettingsRow,
+  AppointmentBlackout,
+  BookingSession,
+  Transaction,
+  ConversationEvent,
+  ApiKey,
+  BotRun,
+  CannedMessage,
+  ContactColumn,
+  ContactGroup,
+  ContactGroupMember,
+  ChatbotFlow,
+  FaqEntry,
+  MediaAsset,
+  OrgIntegration,
+  OutgoingWebhook,
+  Product,
+  Reminder,
+  WebhookDelivery,
+} from "./portal";
+
+// Defined in lib/member-role alongside the rules that read it, and
+// re-exported here so every existing importer keeps working. The import is
+// separate because a re-export does not bring the name into local scope,
+// and the table types below use it.
+import type { OrgRole } from "@/lib/member-role";
+export { ORG_ROLES } from "@/lib/member-role";
+export type { OrgRole };
+export type WabaStatus = "pending" | "active" | "disabled" | "error";
+export type ConversationStatus = "open" | "pending" | "resolved" | "closed";
+export type MessageDirection = "inbound" | "outbound";
+export type MessageStatus = "sent" | "delivered" | "read" | "failed";
+export type TemplateCategory = "MARKETING" | "UTILITY" | "AUTHENTICATION";
+// Meta reports paused and in_appeal too, and the column allows them.
+export type TemplateStatus =
+  | "draft"
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "disabled"
+  | "paused"
+  | "in_appeal";
+export type CampaignStatus = "draft" | "scheduled" | "running" | "completed" | "cancelled" | "failed";
+export type CampaignRecipientStatus = "pending" | "sent" | "delivered" | "read" | "failed";
+
+export interface Database {
+  public: {
+    Tables: {
+      organizations: {
+        Row: {
+          id: string;
+          name: string;
+          created_at: string;
+          /** Per-workspace feature on/off. Wins over the plan. */
+          feature_overrides: Record<string, boolean>;
+          suspended_at: string | null;
+          suspended_reason: string | null;
+          /** The message wallet, in micros (₹1 = 1,000,000). Moved only by wallet_move. */
+          wallet_balance_micros: number;
+          wallet_currency: string;
+        };
+        Insert: { id?: string; name: string; created_at?: string };
+        Update: {
+          id?: string;
+          name?: string;
+          created_at?: string;
+          feature_overrides?: Record<string, boolean>;
+          suspended_at?: string | null;
+          suspended_reason?: string | null;
+        };
+        Relationships: [];
+      };
+      org_invites: {
+        Row: OrgInvite;
+        Insert: Partial<OrgInvite> & {
+          org_id: string;
+          email: string;
+          token: string;
+          expires_at: string;
+        };
+        Update: Partial<OrgInvite>;
+        Relationships: [];
+      };
+      org_members: {
+        Row: { org_id: string; user_id: string; role: OrgRole; created_at: string };
+        Insert: { org_id: string; user_id: string; role?: OrgRole; created_at?: string };
+        Update: { org_id?: string; user_id?: string; role?: OrgRole; created_at?: string };
+        // Relationships are not documentation — postgrest-js reads them to
+        // resolve embedded selects like `organizations(name)`. An empty
+        // array makes any such query resolve to `never`.
+        Relationships: [
+          {
+            foreignKeyName: "org_members_org_id_fkey";
+            columns: ["org_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      group_broadcasts: {
+        Row: GroupBroadcast;
+        Insert: Partial<GroupBroadcast> & { org_id: string; group_id: string; body: string };
+        Update: Partial<GroupBroadcast>;
+        Relationships: [];
+      };
+      scheduled_messages: {
+        Row: ScheduledMessage;
+        Insert: Partial<ScheduledMessage> & { org_id: string; wa_id: string; body: string; send_at: string };
+        Update: Partial<ScheduledMessage>;
+        Relationships: [];
+      };
+      email_optouts: {
+        Row: {
+          id: string;
+          email: string;
+          org_id: string | null;
+          source: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          email: string;
+          org_id?: string | null;
+          source?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          org_id?: string | null;
+          source?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      email_log: {
+        Row: {
+          id: string;
+          org_id: string | null;
+          to_email: string;
+          kind: string;
+          dedupe_key: string;
+          status: string;
+          error: string | null;
+          sent_at: string | null;
+          created_at: string;
+          transport: string | null;
+          from_email: string | null;
+        };
+        Insert: {
+          id?: string;
+          org_id?: string | null;
+          to_email: string;
+          kind: string;
+          dedupe_key: string;
+          status?: string;
+          error?: string | null;
+          sent_at?: string | null;
+          created_at?: string;
+          transport?: string | null;
+          from_email?: string | null;
+        };
+        Update: {
+          status?: string;
+          error?: string | null;
+          sent_at?: string | null;
+        };
+        Relationships: [];
+      };
+      site_events: {
+        Row: {
+          id: number;
+          visitor_id: string;
+          session_id: string;
+          event: string;
+          path: string | null;
+          label: string | null;
+          referrer_host: string | null;
+          source: string | null;
+          medium: string | null;
+          campaign: string | null;
+          device: string | null;
+          created_at: string;
+        };
+        Insert: {
+          visitor_id: string;
+          session_id: string;
+          event: string;
+          path?: string | null;
+          label?: string | null;
+          referrer_host?: string | null;
+          source?: string | null;
+          medium?: string | null;
+          campaign?: string | null;
+          device?: string | null;
+        };
+        Update: { event?: string };
+        Relationships: [];
+      };
+      email_templates: {
+        Row: {
+          id: string;
+          slug: string;
+          name: string;
+          subject: string;
+          body: string;
+          action_label: string | null;
+          action_path: string | null;
+          overrides_kind: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          name: string;
+          subject: string;
+          body: string;
+          action_label?: string | null;
+          action_path?: string | null;
+          overrides_kind?: string | null;
+          is_active?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          slug?: string;
+          name?: string;
+          subject?: string;
+          body?: string;
+          action_label?: string | null;
+          action_path?: string | null;
+          overrides_kind?: string | null;
+          is_active?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      email_groups: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: { id?: string; name: string; description?: string | null };
+        Update: { name?: string; description?: string | null };
+        Relationships: [];
+      };
+      email_group_members: {
+        Row: { group_id: string; org_id: string; added_at: string };
+        Insert: { group_id: string; org_id: string };
+        Update: { group_id?: string; org_id?: string };
+        Relationships: [];
+      };
+      email_campaigns: {
+        Row: {
+          id: string;
+          template_id: string | null;
+          subject: string;
+          audience: string;
+          audience_label: string;
+          sent: number;
+          skipped: number;
+          failed: number;
+          sent_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          template_id?: string | null;
+          subject: string;
+          audience: string;
+          audience_label: string;
+          sent?: number;
+          skipped?: number;
+          failed?: number;
+          sent_by?: string | null;
+        };
+        Update: { sent?: number; skipped?: number; failed?: number };
+        Relationships: [];
+      };
+      waba_connections: {
+        Row: {
+          id: string;
+          org_id: string;
+          waba_id: string;
+          phone_number_id: string;
+          meta_app_id: string;
+          access_token_encrypted: string;
+          webhook_verify_token: string;
+          status: WabaStatus;
+          display_phone_number: string | null;
+          verified_name: string | null;
+          quality_rating: string | null;
+          label: string | null;
+          is_default: boolean;
+          last_checked_at: string | null;
+          last_error: string | null;
+          last_error_at: string | null;
+          catalog_id: string | null;
+          catalog_name: string | null;
+          is_catalog_visible: boolean | null;
+          is_cart_enabled: boolean | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          waba_id: string;
+          phone_number_id: string;
+          meta_app_id: string;
+          access_token_encrypted: string;
+          webhook_verify_token: string;
+          status?: WabaStatus;
+          display_phone_number?: string | null;
+          verified_name?: string | null;
+          quality_rating?: string | null;
+          label?: string | null;
+          is_default?: boolean;
+          last_checked_at?: string | null;
+          last_error?: string | null;
+          last_error_at?: string | null;
+          catalog_id?: string | null;
+          catalog_name?: string | null;
+          is_catalog_visible?: boolean | null;
+          is_cart_enabled?: boolean | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["waba_connections"]["Insert"]>;
+        Relationships: [];
+      };
+      contacts: {
+        Row: {
+          id: string;
+          org_id: string;
+          wa_id: string;
+          name: string | null;
+          tags: string[];
+          custom_fields: Record<string, string>;
+          opted_out: boolean;
+          opted_out_at: string | null;
+          opt_out_reason: string | null;
+          lead_stage: import("./portal").LeadStage;
+          lead_score: number | null;
+          lead_score_reasons: string[];
+          source: string | null;
+          campaign: string | null;
+          deal_value: number | null;
+          crm_refs: Record<string, string>;
+          crm_synced_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          wa_id: string;
+          name?: string | null;
+          tags?: string[];
+          custom_fields?: Record<string, string>;
+          opted_out?: boolean;
+          opted_out_at?: string | null;
+          opt_out_reason?: string | null;
+          lead_stage?: import("./portal").LeadStage;
+          lead_score?: number | null;
+          lead_score_reasons?: string[];
+          source?: string | null;
+          campaign?: string | null;
+          deal_value?: number | null;
+          crm_refs?: Record<string, string>;
+          crm_synced_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["contacts"]["Insert"]>;
+        Relationships: [];
+      };
+      crm_sync_log: {
+        Row: {
+          id: string;
+          org_id: string;
+          provider: string;
+          contact_id: string | null;
+          status: "created" | "updated" | "skipped" | "failed";
+          external_id: string | null;
+          error: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          provider: string;
+          contact_id?: string | null;
+          status: "created" | "updated" | "skipped" | "failed";
+          external_id?: string | null;
+          error?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crm_sync_log"]["Insert"]>;
+        Relationships: [];
+      };
+      conversations: {
+        Row: {
+          id: string;
+          org_id: string;
+          contact_id: string;
+          connection_id: string | null;
+          last_message_at: string | null;
+          status: ConversationStatus;
+          created_at: string;
+          bot_enabled: boolean;
+          bot_flow_id: string | null;
+          bot_node_id: string | null;
+          last_inbound_at: string | null;
+          bot_variables: Record<string, string>;
+          bot_resume_at: string | null;
+          bot_resume_node_id: string | null;
+          assigned_to: string | null;
+          last_read_at: string | null;
+          ai_mode: "ai" | "copilot" | "human";
+          priority: "normal" | "medium" | "high" | "urgent";
+          closed_at: string | null;
+          needs_human: boolean;
+          needs_human_reason: string | null;
+          ai_summary: string | null;
+          ai_next_action: string | null;
+          ai_intent: string | null;
+          ai_sentiment: string | null;
+          ai_analyzed_at: string | null;
+          ai_analyzed_message_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          contact_id: string;
+          connection_id?: string | null;
+          last_message_at?: string | null;
+          status?: ConversationStatus;
+          created_at?: string;
+          bot_enabled?: boolean;
+          bot_flow_id?: string | null;
+          bot_node_id?: string | null;
+          last_inbound_at?: string | null;
+          bot_variables?: Record<string, string>;
+          bot_resume_at?: string | null;
+          bot_resume_node_id?: string | null;
+          assigned_to?: string | null;
+          last_read_at?: string | null;
+          ai_mode?: "ai" | "copilot" | "human";
+          priority?: "normal" | "medium" | "high" | "urgent";
+          closed_at?: string | null;
+          needs_human?: boolean;
+          needs_human_reason?: string | null;
+          ai_summary?: string | null;
+          ai_next_action?: string | null;
+          ai_intent?: string | null;
+          ai_sentiment?: string | null;
+          ai_analyzed_at?: string | null;
+          ai_analyzed_message_id?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["conversations"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "conversations_contact_id_fkey";
+            columns: ["contact_id"];
+            isOneToOne: false;
+            referencedRelation: "contacts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      messages: {
+        Row: {
+          id: string;
+          conversation_id: string;
+          org_id: string;
+          direction: MessageDirection;
+          type: string;
+          content: Record<string, unknown>;
+          wa_message_id: string | null;
+          status: MessageStatus;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          conversation_id: string;
+          org_id?: string;
+          direction: MessageDirection;
+          type: string;
+          content?: Record<string, unknown>;
+          wa_message_id?: string | null;
+          status?: MessageStatus;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["messages"]["Insert"]>;
+        Relationships: [];
+      };
+      message_templates: {
+        Row: {
+          id: string;
+          org_id: string;
+          name: string;
+          category: TemplateCategory;
+          status: TemplateStatus;
+          language: string;
+          components_json: unknown[];
+          waba_id: string;
+          waba_template_id: string | null;
+          rejected_reason: string | null;
+          last_synced_at: string | null;
+          header_format: "NONE" | "TEXT" | "IMAGE" | "VIDEO" | "DOCUMENT";
+          header_text: string;
+          header_media_url: string;
+          body_text: string;
+          footer_text: string;
+          buttons: unknown[];
+          variable_samples: string[];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          name: string;
+          category?: TemplateCategory;
+          status?: TemplateStatus;
+          language?: string;
+          components_json?: unknown[];
+          waba_id?: string;
+          waba_template_id?: string | null;
+          rejected_reason?: string | null;
+          last_synced_at?: string | null;
+          header_format?: "NONE" | "TEXT" | "IMAGE" | "VIDEO" | "DOCUMENT";
+          header_text?: string;
+          header_media_url?: string;
+          body_text?: string;
+          footer_text?: string;
+          buttons?: unknown[];
+          variable_samples?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["message_templates"]["Insert"]>;
+        Relationships: [];
+      };
+      campaigns: {
+        Row: {
+          id: string;
+          org_id: string;
+          connection_id: string | null;
+          template_id: string | null;
+          segment_filter: Record<string, unknown>;
+          status: CampaignStatus;
+          scheduled_at: string | null;
+          created_at: string;
+          name: string;
+          variables: string[];
+          audience: Record<string, unknown>;
+          started_at: string | null;
+          completed_at: string | null;
+          last_error: string | null;
+          is_drip: boolean;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          template_id?: string | null;
+          segment_filter?: Record<string, unknown>;
+          status?: CampaignStatus;
+          scheduled_at?: string | null;
+          created_at?: string;
+          name?: string;
+          variables?: string[];
+          audience?: Record<string, unknown>;
+          started_at?: string | null;
+          completed_at?: string | null;
+          last_error?: string | null;
+          is_drip?: boolean;
+          connection_id?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["campaigns"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_template_id_fkey";
+            columns: ["template_id"];
+            isOneToOne: false;
+            referencedRelation: "message_templates";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      campaign_recipients: {
+        Row: {
+          id: string;
+          campaign_id: string;
+          org_id: string;
+          contact_id: string | null;
+          status: CampaignRecipientStatus;
+          sent_at: string | null;
+          created_at: string;
+          wa_id: string | null;
+          wa_message_id: string | null;
+          error: string | null;
+          step_index: number;
+          send_after: string | null;
+        };
+        Insert: {
+          id?: string;
+          campaign_id: string;
+          org_id?: string;
+          contact_id?: string | null;
+          status?: CampaignRecipientStatus;
+          sent_at?: string | null;
+          created_at?: string;
+          wa_id?: string | null;
+          wa_message_id?: string | null;
+          error?: string | null;
+          step_index?: number;
+          send_after?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["campaign_recipients"]["Insert"]>;
+        Relationships: [];
+      };
+      automation_flows: {
+        Row: {
+          id: string;
+          org_id: string;
+          connection_id: string | null;
+          name: string;
+          trigger_type: string;
+          trigger_config: Record<string, unknown>;
+          actions_json: unknown[];
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          name: string;
+          trigger_type: string;
+          trigger_config?: Record<string, unknown>;
+          actions_json?: unknown[];
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["automation_flows"]["Insert"]>;
+        Relationships: [];
+      };
+
+      // --- platform administration + billing -----------------------------
+      platform_admins: {
+        Row: { user_id: string; created_at: string };
+        Insert: { user_id: string; created_at?: string };
+        Update: { user_id?: string; created_at?: string };
+        Relationships: [];
+      };
+      plans: {
+        Row: Plan;
+        Insert: Partial<Plan> & { name: string; slug: string };
+        Update: Partial<Plan>;
+        Relationships: [];
+      };
+      add_ons: {
+        Row: AddOn;
+        Insert: Partial<AddOn> & { name: string; slug: string };
+        Update: Partial<AddOn>;
+        Relationships: [];
+      };
+      subscriptions: {
+        Row: Subscription;
+        Insert: Partial<Subscription> & { org_id: string };
+        Update: Partial<Subscription>;
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey";
+            columns: ["plan_id"];
+            isOneToOne: false;
+            referencedRelation: "plans";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "subscriptions_org_id_fkey";
+            columns: ["org_id"];
+            isOneToOne: true;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      org_add_ons: {
+        Row: {
+          id: string;
+          org_id: string;
+          add_on_id: string;
+          quantity: number;
+          created_at: string;
+        };
+        Insert: { id?: string; org_id: string; add_on_id: string; quantity?: number; created_at?: string };
+        Update: Partial<{ org_id: string; add_on_id: string; quantity: number }>;
+        Relationships: [];
+      };
+      coupons: {
+        Row: Coupon;
+        Insert: Partial<Coupon> & { code: string; discount_value: number };
+        Update: Partial<Coupon>;
+        Relationships: [];
+      };
+      wallet_ledger: {
+        Row: {
+          id: string;
+          org_id: string;
+          kind: "topup" | "debit" | "refund" | "adjustment";
+          /** Micros, always positive. The kind says which way it moves. */
+          amount_micros: number;
+          currency: string;
+          /** The running balance after this row, so a statement reads top to bottom. */
+          balance_after_micros: number;
+          description: string;
+          reference: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["wallet_ledger"]["Row"]> & {
+          org_id: string;
+          kind: "topup" | "debit" | "refund" | "adjustment";
+          amount_micros: number;
+          balance_after_micros: number;
+          description: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["wallet_ledger"]["Row"]>;
+        Relationships: [];
+      };
+      guest_checkouts: {
+        Row: {
+          id: string;
+          plan_id: string;
+          /** 32 hex characters. The only thing that can claim this payment. */
+          claim_token: string;
+          amount_cents: number;
+          currency: string;
+          billing_interval: "monthly" | "yearly";
+          status: "pending" | "paid" | "claimed" | "expired";
+          provider: string | null;
+          /** The gateway's own order id — what a payment is matched on. */
+          provider_reference: string | null;
+          provider_payment_id: string | null;
+          contact_name: string | null;
+          contact_email: string | null;
+          contact_phone: string | null;
+          created_at: string;
+          paid_at: string | null;
+          claimed_at: string | null;
+          claimed_org_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          plan_id: string;
+          claim_token: string;
+          amount_cents?: number;
+          currency?: string;
+          billing_interval?: "monthly" | "yearly";
+          status?: "pending" | "paid" | "claimed" | "expired";
+          provider?: string | null;
+          provider_reference?: string | null;
+          provider_payment_id?: string | null;
+          contact_name?: string | null;
+          contact_email?: string | null;
+          contact_phone?: string | null;
+          created_at?: string;
+          paid_at?: string | null;
+          claimed_at?: string | null;
+          claimed_org_id?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["guest_checkouts"]["Insert"]>;
+        Relationships: [];
+      };
+      signup_otps: {
+        Row: {
+          id: string;
+          /** Digits only, country code included — Meta's own form. */
+          wa_id: string;
+          /** An HMAC of the code, keyed to the number. Never the code. */
+          code_hash: string;
+          expires_at: string;
+          attempts: number;
+          sends: number;
+          last_sent_at: string;
+          window_started_at: string;
+          /** How the code was delivered: "whatsapp" or, as a fallback, "email". */
+          channel: "whatsapp" | "email";
+          verified_at: string | null;
+          /** Single-use proof that the number in the sign-up form was verified. */
+          verification_token: string | null;
+          consumed_at: string | null;
+          name: string | null;
+          email: string | null;
+          requested_ip: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          wa_id: string;
+          code_hash: string;
+          expires_at: string;
+          attempts?: number;
+          sends?: number;
+          last_sent_at?: string;
+          window_started_at?: string;
+          channel?: "whatsapp" | "email";
+          verified_at?: string | null;
+          verification_token?: string | null;
+          consumed_at?: string | null;
+          name?: string | null;
+          email?: string | null;
+          requested_ip?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["signup_otps"]["Insert"]>;
+        Relationships: [];
+      };
+      drip_campaigns: {
+        Row: {
+          id: string;
+          org_id: string;
+          name: string;
+          description: string | null;
+          status: "draft" | "active" | "paused" | "archived";
+          trigger_type: "manual" | "keyword" | "api";
+          trigger_keywords: string[];
+          exit_on_keyword: boolean;
+          exit_keywords: string[];
+          exit_on_reply: boolean;
+          skip_missed_steps: boolean;
+          time_zone: string;
+          connection_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["drip_campaigns"]["Row"]> & {
+          org_id: string;
+          name: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["drip_campaigns"]["Row"]>;
+        Relationships: [];
+      };
+      drip_steps: {
+        Row: {
+          id: string;
+          org_id: string;
+          campaign_id: string;
+          step_index: number;
+          template_id: string | null;
+          variables: string[];
+          /** The gap *after* this step. Never read on the last one. */
+          wait_kind: "duration" | "time_of_day";
+          wait_minutes: number;
+          send_at_minutes: number;
+          send_at_days: number;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["drip_steps"]["Row"]> & {
+          org_id: string;
+          campaign_id: string;
+          step_index: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["drip_steps"]["Row"]>;
+        Relationships: [];
+      };
+      drip_enrollments: {
+        Row: {
+          id: string;
+          org_id: string;
+          campaign_id: string;
+          contact_id: string | null;
+          wa_id: string;
+          status: "active" | "completed" | "exited" | "failed";
+          /** The step that goes out next, and when. The whole state machine. */
+          next_step_index: number;
+          next_send_at: string;
+          last_sent_at: string | null;
+          last_error: string | null;
+          exited_reason: string | null;
+          enrolled_via: "manual" | "keyword" | "api" | "import";
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["drip_enrollments"]["Row"]> & {
+          org_id: string;
+          campaign_id: string;
+          wa_id: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["drip_enrollments"]["Row"]>;
+        Relationships: [];
+      };
+      orders: {
+        Row: Order;
+        Insert: Partial<Order> & { org_id: string };
+        Update: Partial<Order>;
+        Relationships: [
+          {
+            foreignKeyName: "orders_org_id_fkey";
+            columns: ["org_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_plan_id_fkey";
+            columns: ["plan_id"];
+            isOneToOne: false;
+            referencedRelation: "plans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      support_tickets: {
+        Row: SupportTicket;
+        Insert: Partial<SupportTicket> & { org_id: string; subject: string; body: string };
+        Update: Partial<SupportTicket>;
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_org_id_fkey";
+            columns: ["org_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      support_ticket_messages: {
+        Row: {
+          id: string;
+          ticket_id: string;
+          org_id: string;
+          author_id: string | null;
+          body: string;
+          is_staff: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          ticket_id: string;
+          org_id?: string;
+          author_id?: string | null;
+          body: string;
+          is_staff?: boolean;
+          created_at?: string;
+        };
+        Update: Partial<{ body: string; is_staff: boolean }>;
+        Relationships: [];
+      };
+      webhook_logs: {
+        Row: WebhookLog;
+        Insert: Partial<WebhookLog>;
+        Update: Partial<WebhookLog>;
+        Relationships: [
+          {
+            foreignKeyName: "webhook_logs_org_id_fkey";
+            columns: ["org_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      site_content: {
+        Row: {
+          key: string;
+          value: unknown;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          key: string;
+          value?: unknown;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          value?: unknown;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [];
+      };
+      platform_settings: {
+        Row: PlatformSetting;
+        Insert: Partial<PlatformSetting> & { key: string };
+        Update: Partial<PlatformSetting>;
+        Relationships: [];
+      };
+
+      // --- portal modules -------------------------------------------------
+      ai_assistants: {
+        Row: AiAssistant;
+        Insert: Partial<AiAssistant> & { org_id: string; name: string };
+        Update: Partial<AiAssistant>;
+        Relationships: [];
+      };
+      campaign_steps: {
+        Row: CampaignStep;
+        Insert: Partial<CampaignStep> & {
+          org_id: string;
+          campaign_id: string;
+          step_index: number;
+        };
+        Update: Partial<CampaignStep>;
+        Relationships: [];
+      };
+      meetings: {
+        Row: Meeting;
+        Insert: Partial<Meeting> & { org_id: string; title: string; starts_at: string };
+        Update: Partial<Meeting>;
+        Relationships: [
+          {
+            foreignKeyName: "meetings_contact_id_fkey";
+            columns: ["contact_id"];
+            isOneToOne: false;
+            referencedRelation: "contacts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      appointment_types: {
+        Row: AppointmentType;
+        Insert: Partial<AppointmentType> & { org_id: string; name: string };
+        Update: Partial<AppointmentType>;
+        Relationships: [];
+      };
+      appointment_settings: {
+        Row: AppointmentSettingsRow;
+        Insert: Partial<AppointmentSettingsRow> & { org_id: string };
+        Update: Partial<AppointmentSettingsRow>;
+        Relationships: [];
+      };
+      appointment_blackouts: {
+        Row: AppointmentBlackout;
+        Insert: Partial<AppointmentBlackout> & {
+          org_id: string;
+          starts_at: string;
+          ends_at: string;
+        };
+        Update: Partial<AppointmentBlackout>;
+        Relationships: [];
+      };
+      booking_sessions: {
+        Row: BookingSession;
+        Insert: Partial<BookingSession> & {
+          conversation_id: string;
+          org_id: string;
+          contact_id: string;
+          step: "type" | "date" | "time";
+        };
+        Update: Partial<BookingSession>;
+        Relationships: [];
+      };
+      invoice_settings: {
+        Row: InvoiceSettings;
+        Insert: Partial<InvoiceSettings> & { org_id: string };
+        Update: Partial<InvoiceSettings>;
+        Relationships: [];
+      };
+      invoices: {
+        Row: Invoice;
+        Insert: Partial<Invoice> & { org_id: string };
+        Update: Partial<Invoice>;
+        Relationships: [
+          {
+            foreignKeyName: "invoices_contact_id_fkey";
+            columns: ["contact_id"];
+            isOneToOne: false;
+            referencedRelation: "contacts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      invoice_items: {
+        Row: InvoiceItem;
+        Insert: Partial<InvoiceItem> & { invoice_id: string; description: string };
+        Update: Partial<InvoiceItem>;
+        Relationships: [];
+      };
+      recurring_invoices: {
+        Row: RecurringInvoice;
+        Insert: Partial<RecurringInvoice> & {
+          org_id: string;
+          title: string;
+          next_run_on: string;
+        };
+        Update: Partial<RecurringInvoice>;
+        Relationships: [
+          {
+            foreignKeyName: "recurring_invoices_contact_id_fkey";
+            columns: ["contact_id"];
+            isOneToOne: false;
+            referencedRelation: "contacts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      store_orders: {
+        Row: StoreOrder;
+        Insert: Partial<StoreOrder> & { org_id: string; reference: string };
+        Update: Partial<StoreOrder>;
+        Relationships: [
+          {
+            foreignKeyName: "store_orders_contact_id_fkey";
+            columns: ["contact_id"];
+            isOneToOne: false;
+            referencedRelation: "contacts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      store_order_items: {
+        Row: StoreOrderItem;
+        Insert: Partial<StoreOrderItem> & { order_id: string; name: string };
+        Update: Partial<StoreOrderItem>;
+        Relationships: [];
+      };
+      payment_settings: {
+        Row: PaymentSettings;
+        Insert: Partial<PaymentSettings> & { org_id: string };
+        Update: Partial<PaymentSettings>;
+        Relationships: [];
+      };
+      transactions: {
+        Row: Transaction;
+        Insert: Partial<Transaction> & { org_id: string };
+        Update: Partial<Transaction>;
+        Relationships: [
+          {
+            foreignKeyName: "transactions_contact_id_fkey";
+            columns: ["contact_id"];
+            isOneToOne: false;
+            referencedRelation: "contacts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      conversation_notes: {
+        Row: ConversationNote;
+        Insert: Partial<ConversationNote> & {
+          org_id: string;
+          conversation_id: string;
+          body: string;
+        };
+        Update: Partial<ConversationNote>;
+        Relationships: [];
+      };
+      conversation_events: {
+        Row: ConversationEvent;
+        Insert: Partial<ConversationEvent> & {
+          org_id: string;
+          conversation_id: string;
+          kind: string;
+          label: string;
+        };
+        Update: Partial<ConversationEvent>;
+        Relationships: [];
+      };
+      profiles: {
+        Row: Profile;
+        Insert: Partial<Profile> & { user_id: string };
+        Update: Partial<Profile>;
+        Relationships: [];
+      };
+      assistant_knowledge: {
+        Row: AssistantKnowledge;
+        Insert: Partial<AssistantKnowledge> & { org_id: string; title: string };
+        Update: Partial<AssistantKnowledge>;
+        Relationships: [
+          {
+            foreignKeyName: "assistant_knowledge_assistant_id_fkey";
+            columns: ["assistant_id"];
+            isOneToOne: false;
+            referencedRelation: "ai_assistants";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      chatbot_flows: {
+        Row: ChatbotFlow;
+        Insert: Partial<ChatbotFlow> & { org_id: string; name: string };
+        Update: Partial<ChatbotFlow>;
+        Relationships: [];
+      };
+      faq_entries: {
+        Row: FaqEntry;
+        Insert: Partial<FaqEntry> & { org_id: string; question: string; answer: string };
+        Update: Partial<FaqEntry>;
+        Relationships: [];
+      };
+      reminders: {
+        Row: Reminder;
+        Insert: Partial<Reminder> & { org_id: string; title: string; remind_at: string };
+        Update: Partial<Reminder>;
+        Relationships: [
+          {
+            foreignKeyName: "reminders_contact_id_fkey";
+            columns: ["contact_id"];
+            isOneToOne: false;
+            referencedRelation: "contacts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      org_integrations: {
+        Row: OrgIntegration;
+        Insert: Partial<OrgIntegration> & { org_id: string; provider: string };
+        Update: Partial<OrgIntegration>;
+        Relationships: [];
+      };
+      api_keys: {
+        Row: ApiKey;
+        Insert: Partial<ApiKey> & {
+          org_id: string;
+          name: string;
+          key_prefix: string;
+          key_hash: string;
+        };
+        Update: Partial<ApiKey>;
+        Relationships: [];
+      };
+      outgoing_webhooks: {
+        Row: OutgoingWebhook;
+        Insert: Partial<OutgoingWebhook> & {
+          org_id: string;
+          name: string;
+          target_url: string;
+          secret: string;
+        };
+        Update: Partial<OutgoingWebhook>;
+        Relationships: [];
+      };
+      webhook_deliveries: {
+        Row: WebhookDelivery;
+        Insert: Partial<WebhookDelivery> & { webhook_id: string; org_id: string; event: string };
+        Update: Partial<WebhookDelivery>;
+        Relationships: [];
+      };
+      media_assets: {
+        Row: MediaAsset;
+        Insert: Partial<MediaAsset> & { org_id: string; name: string; url: string };
+        Update: Partial<MediaAsset>;
+        Relationships: [];
+      };
+      products: {
+        Row: Product;
+        Insert: Partial<Product> & { org_id: string; name: string };
+        Update: Partial<Product>;
+        Relationships: [];
+      };
+      canned_messages: {
+        Row: CannedMessage;
+        Insert: Partial<CannedMessage> & { org_id: string; shortcut: string; title: string; body: string };
+        Update: Partial<CannedMessage>;
+        Relationships: [];
+      };
+      whatsapp_flows: {
+        Row: WhatsappFlow;
+        Insert: Partial<WhatsappFlow> & { org_id: string; name: string };
+        Update: Partial<WhatsappFlow>;
+        Relationships: [];
+      };
+      flow_sends: {
+        Row: FlowSend;
+        Insert: Partial<FlowSend> & { org_id: string; flow_id: string; wa_id: string; flow_token: string };
+        Update: Partial<FlowSend>;
+        Relationships: [];
+      };
+      flow_responses: {
+        Row: FlowResponse;
+        Insert: Partial<FlowResponse> & { org_id: string };
+        Update: Partial<FlowResponse>;
+        Relationships: [];
+      };
+      contact_groups: {
+        Row: ContactGroup;
+        Insert: Partial<ContactGroup> & { org_id: string; name: string };
+        Update: Partial<ContactGroup>;
+        Relationships: [];
+      };
+      contact_group_members: {
+        Row: ContactGroupMember;
+        Insert: Partial<ContactGroupMember> & { group_id: string; contact_id: string; org_id: string };
+        Update: Partial<ContactGroupMember>;
+        Relationships: [
+          {
+            foreignKeyName: "contact_group_members_contact_id_fkey";
+            columns: ["contact_id"];
+            isOneToOne: false;
+            referencedRelation: "contacts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      contact_columns: {
+        Row: ContactColumn;
+        Insert: Partial<ContactColumn> & { org_id: string; key: string; label: string };
+        Update: Partial<ContactColumn>;
+        Relationships: [];
+      };
+      bot_runs: {
+        Row: BotRun;
+        Insert: Partial<BotRun> & { org_id: string };
+        Update: Partial<BotRun>;
+        Relationships: [
+          {
+            foreignKeyName: "bot_runs_conversation_id_fkey";
+            columns: ["conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "bot_runs_contact_id_fkey";
+            columns: ["contact_id"];
+            isOneToOne: false;
+            referencedRelation: "contacts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+    };
+    Views: {
+      campaign_progress: {
+        Row: {
+          campaign_id: string;
+          org_id: string;
+          total: number;
+          sent: number;
+          failed: number;
+          pending: number;
+        };
+        Relationships: [];
+      };
+    };
+    Functions: {
+      /**
+       * Hands out the next invoice number and steps the counter, under a
+       * row lock. GST wants consecutive serial numbers, so this exists
+       * rather than max(number)+1 — see the invoicing migration.
+       */
+      claim_invoice_number: {
+        Args: { target_org: string };
+        Returns: number;
+      };
+      /**
+       * Moves a workspace's wallet balance and writes the line that
+       * explains it, together, under a row lock on the organization.
+       * Returns the new balance, or null when the move was refused.
+       */
+      wallet_move: {
+        Args: {
+          p_org_id: string;
+          p_kind: "topup" | "debit" | "refund" | "adjustment";
+          /** Micros. ₹1 = 1,000,000. */
+          p_amount_micros: number;
+          p_description: string;
+          p_reference?: string | null;
+          p_allow_negative?: boolean;
+        };
+        Returns: number | null;
+      };
+      /**
+       * Creates a workspace and its owner membership for a user who has
+       * neither, under an advisory lock on the user so that concurrent
+       * callers get one workspace rather than one each.
+       */
+      provision_org_for_user: {
+        Args: { target_user: string; org_name: string };
+        Returns: string;
+      };
+      /**
+       * Counts one redemption against a coupon under the row's own lock.
+       * False when it ran out between the price being quoted and paid.
+       */
+      redeem_coupon: {
+        Args: { target_coupon: string };
+        Returns: boolean;
+      };
+    };
+  };
+}
