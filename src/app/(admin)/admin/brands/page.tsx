@@ -107,14 +107,42 @@ export default async function AdminBrandsPage() {
                         )}
                       </div>
 
-                      <div className="text-xs text-white/50 mt-1.5 space-y-0.5">
+                      <div className="text-xs text-white/50 mt-1.5 space-y-1">
+                        {/* The link that works right now, first. A domain
+                            needs DNS and a wildcard on the hosting
+                            project before it answers, and printing it as
+                            though it already does is how a working
+                            feature looks broken. */}
                         <p>
-                          Address:{" "}
+                          See it now:{" "}
+                          <a
+                            href={`/b/${brand.slug}`}
+                            className="text-accent-ink font-mono hover:underline"
+                          >
+                            /b/{brand.slug}
+                          </a>
+                          <span className="text-white/35">
+                            {" "}
+                            — puts this browser behind their front door for 8 hours
+                          </span>
+                        </p>
+                        <p>
+                          Their address:{" "}
                           <span className="text-white/75 font-mono">
                             {brand.domain ?? `${brand.slug}.${ROOT_DOMAIN || "your-domain.com"}`}
-                          </span>
-                          {!brand.domain && (
-                            <span className="text-white/35"> — no custom domain yet</span>
+                          </span>{" "}
+                          {brand.domain ? (
+                            <span className="text-white/35">
+                              — works once this exact domain is added in Vercel
+                            </span>
+                          ) : ROOT_DOMAIN ? (
+                            <span className="text-white/35">
+                              — works once *.{ROOT_DOMAIN} is added in Vercel
+                            </span>
+                          ) : (
+                            <span className="text-[#FACC15]/80">
+                              — needs PLATFORM_ROOT_DOMAIN set in Vercel
+                            </span>
                           )}
                         </p>
                         <p>
@@ -236,27 +264,67 @@ export default async function AdminBrandsPage() {
           </Card>
 
           <Card>
-            <h2 className="font-semibold mb-2">Before a custom domain works</h2>
-            <ol className="text-xs text-white/55 space-y-2 leading-relaxed list-decimal pl-4">
-              <li>The agency points their domain at Vercel with a CNAME.</li>
-              <li>You add that domain to this project in Vercel → Settings → Domains.</li>
-              <li>You paste it in the brand above.</li>
-            </ol>
-            <p className="text-xs text-white/40 mt-3 leading-relaxed">
-              The{" "}
-              <span className="font-mono text-white/60">
-                name.{ROOT_DOMAIN || "your-domain.com"}
-              </span>{" "}
-              address needs none of that — add the wildcard{" "}
-              <span className="font-mono text-white/60">*.{ROOT_DOMAIN || "your-domain.com"}</span>{" "}
-              in Vercel once and every brand gets one for free.
+            <h2 className="font-semibold mb-1">Why an address may not open</h2>
+            <p className="text-sm text-white/50 mb-4 leading-relaxed">
+              A brand exists the moment you create it, but a web address is not ours to give —
+              two things outside this app have to agree first. The{" "}
+              <span className="font-mono text-white/70">/b/name</span> preview above needs
+              neither, which is how you tell a branding problem from a domain one.
             </p>
-            {!ROOT_DOMAIN && (
-              <p className="text-xs text-[#FACC15]/85 mt-3 leading-relaxed">
-                Set <span className="font-mono">PLATFORM_ROOT_DOMAIN</span> in Vercel to turn those
-                free addresses on. Until then only custom domains answer.
-              </p>
-            )}
+
+            <p className="text-xs font-medium text-white/70 mb-2">
+              To turn on name.{ROOT_DOMAIN || "your-domain.com"} for every brand — once, not per
+              brand:
+            </p>
+            <ol className="text-xs text-white/55 space-y-2 leading-relaxed list-decimal pl-4 mb-4">
+              <li>
+                At your DNS provider, add a CNAME record:{" "}
+                <span className="font-mono text-white/70">*</span> →{" "}
+                <span className="font-mono text-white/70">cname.vercel-dns.com</span>
+              </li>
+              <li>
+                In Vercel → this project → Settings → Domains, add{" "}
+                <span className="font-mono text-white/70">
+                  *.{ROOT_DOMAIN || "your-domain.com"}
+                </span>
+              </li>
+              <li>
+                In Vercel → Settings → Environment Variables, set{" "}
+                <span className="font-mono text-white/70">PLATFORM_ROOT_DOMAIN</span> to{" "}
+                <span className="font-mono text-white/70">
+                  {ROOT_DOMAIN || "your-domain.com"}
+                </span>
+                , then redeploy.
+              </li>
+            </ol>
+
+            <p className="text-xs font-medium text-white/70 mb-2">
+              For an agency&rsquo;s own domain — once per brand:
+            </p>
+            <ol className="text-xs text-white/55 space-y-2 leading-relaxed list-decimal pl-4">
+              <li>They point it at Vercel with a CNAME.</li>
+              <li>You add that exact domain in Vercel → Settings → Domains.</li>
+              <li>You paste it into the brand above.</li>
+            </ol>
+
+            <p
+              className={`text-xs mt-4 leading-relaxed ${
+                ROOT_DOMAIN ? "text-white/45" : "text-[#FACC15]/85"
+              }`}
+            >
+              {ROOT_DOMAIN ? (
+                <>
+                  <span className="font-mono">PLATFORM_ROOT_DOMAIN</span> is set to{" "}
+                  <span className="font-mono text-white/70">{ROOT_DOMAIN}</span>. Step 3 is done.
+                </>
+              ) : (
+                <>
+                  <span className="font-mono">PLATFORM_ROOT_DOMAIN</span> is not set on this
+                  deployment, so subdomain addresses cannot work yet whatever DNS says. The
+                  preview links work regardless.
+                </>
+              )}
+            </p>
           </Card>
         </div>
       </div>

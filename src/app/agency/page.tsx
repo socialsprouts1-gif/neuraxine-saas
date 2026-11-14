@@ -44,17 +44,20 @@ export default async function AgencyPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <p className="text-xs text-white/45">Your address</p>
-          <a
-            href={`https://${address}`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-sm font-mono text-accent-ink hover:underline break-all"
-          >
-            {address}
-          </a>
+          <p className="text-sm font-mono text-white/80 break-all">{address}</p>
           <p className="text-[11px] text-white/35 mt-1.5 leading-relaxed">
-            Send customers here. They see your name on everything.
+            Send customers here. They see your name on everything, and never ours.
           </p>
+          {/* The link that works whatever DNS is doing. Worth having in
+              front of an agency checking their own logo: "my address does
+              not open yet" and "my logo is wrong" are different problems
+              and this separates them. */}
+          <a
+            href={`/b/${brand.slug}`}
+            className="inline-block text-[11px] text-accent-ink hover:underline mt-2"
+          >
+            Preview it here →
+          </a>
         </Card>
         <Card>
           <p className="text-xs text-white/45">Clients</p>

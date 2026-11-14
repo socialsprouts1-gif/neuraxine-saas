@@ -101,6 +101,15 @@ test("domainProblem refuses a URL pasted where a domain goes", () => {
   assert.match(domainProblem("app acme.com") ?? "", /spaces|no https|slashes/i);
 });
 
+test("the platform's own host is recognised without a lookup", () => {
+  // brandFromHost short-circuits on this comparison before it touches the
+  // database. If hostKey ever stopped dropping www, the platform's own
+  // site would start doing a brand query on every single page load.
+  assert.equal(hostKey("www.neurachat.in"), hostKey("neurachat.in"));
+  assert.equal(hostKey("NEURACHAT.IN:443"), hostKey("neurachat.in"));
+  assert.notEqual(hostKey("acme.neurachat.in"), hostKey("neurachat.in"));
+});
+
 test("wordmark joins the two halves of a name", () => {
   assert.equal(wordmark({ name: "Acme", nameAccent: "Chat" }), "AcmeChat");
   assert.equal(wordmark({ name: "Acme", nameAccent: "" }), "Acme");

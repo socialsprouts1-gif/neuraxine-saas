@@ -8,7 +8,7 @@ import { featureForPath, resolveFeatures } from "@/lib/features";
 import { sendEmail } from "@/lib/email";
 import { readTrialDays } from "@/lib/trial";
 import { welcomeEmail } from "@/lib/email-templates";
-import { currentBrand } from "@/lib/brand-server";
+import { brandFromHost } from "@/lib/brand-server";
 import type { OrgRole } from "@/types/database";
 
 export interface OrgContext {
@@ -224,7 +224,11 @@ async function claimBrandIfNew(
   if (!Number.isFinite(age) || age < 0 || age > BRAND_CLAIM_WINDOW_MS) return;
 
   try {
-    const brand = await currentBrand();
+    // brandFromHost, never currentBrand: a preview link must not decide
+    // who a new customer belongs to. Somebody checking what an agency's
+    // login page looks like, minutes after signing up themselves, would
+    // otherwise be handed to that agency for good.
+    const brand = await brandFromHost();
     if (!brand) return;
 
     await createAdminClient()

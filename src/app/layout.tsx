@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import Track from "@/components/analytics/Track";
 import ServiceWorker from "@/components/ServiceWorker";
 import Toasts from "@/components/ui/Toasts";
+import BrandPreviewBar from "@/components/BrandPreviewBar";
 import { currentBrand } from "@/lib/brand-server";
 import { brandThemeCss } from "@/lib/brand";
 
@@ -170,6 +171,8 @@ export default async function RootLayout({
             renders nothing at all — which is what made a failing button
             look like a button with no function behind it. */}
         <Toasts />
+        {/* Renders nothing unless this browser asked to preview a brand. */}
+        <BrandPreviewBar />
         {children}
         {/* Renders nothing. Here rather than on the landing page because
             the sign-up pages are the half of the funnel worth measuring,
