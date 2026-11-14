@@ -1,21 +1,186 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { loadSiteContent } from "@/lib/site-content-server";
+import { THEME_INIT_SCRIPT } from "@/components/ThemeToggle";
+import MotionFallback, { MOTION_FALLBACK_SCRIPT } from "@/components/MotionFallback";
+import { Suspense } from "react";
+import Track from "@/components/analytics/Track";
+import ServiceWorker from "@/components/ServiceWorker";
+import Toasts from "@/components/ui/Toasts";
+import BrandPreviewBar from "@/components/BrandPreviewBar";
+import { currentBrand } from "@/lib/brand-server";
+import { brandThemeCss } from "@/lib/brand";
 
-export const metadata: Metadata = {
-  title: "WhatsFlow AI — AI-Powered WhatsApp Automation Platform",
-  description: "Automate customer support, lead generation, sales, follow-ups, and engagement with AI-powered WhatsApp workflows.",
-  keywords: "WhatsApp automation, AI chatbot, WhatsApp marketing, CRM, lead generation",
+// Meta's domain verification token. Public by design — it proves control of
+// the domain to Meta and nothing else. Meta fetches the home page and reads
+// it out of <head>, and explicitly rejects a tag injected by JavaScript, so
+// it has to be rendered server-side here rather than added on the client.
+//
+// Overridable so a different deployment can carry its own token without a
+// code change, and so a mis-transcribed character can be corrected from
+// Vercel rather than a redeploy of this file.
+/**
+ * The product's typeface.
+ *
+ * Space Grotesk rather than a neutral UI sans: the squared-off curves and
+ * the distinctive a and g give the interface a voice, which a tool sold on
+ * looking like a real product needs. It is a variable font, so one file
+ * covers every weight from 300 to 700 instead of five.
+ *
+ * Loaded through next/font rather than the @import it replaces. That import
+ * sat at the top of globals.css and blocked the first paint on a round trip
+ * to Google, then swapped the text once the font landed — a visible flash
+ * on every cold load. next/font serves the file from this domain, inlines
+ * the @font-face, and hands back fallback metrics so nothing shifts when it
+ * arrives.
+ */
+const sans = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+/** Kept for anything monospaced — API keys, ids, webhook payloads. */
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
+const FACEBOOK_DOMAIN_VERIFICATION =
+  process.env.FACEBOOK_DOMAIN_VERIFICATION ?? "txlrl2b6tbksilyz5jhz1un9410ga4";
+
+/**
+ * Title, description and favicon follow the brand set in the admin panel.
+ *
+ * generateMetadata rather than a constant, because these now come from the
+ * database. It falls back to the defaults on its own, so an unmigrated or
+ * unreachable database still produces a correctly titled page.
+ */
+/**
+ * The viewport. Without this, mobile Safari and Chrome render the page at a
+ * ~980px desktop width and then shrink it to fit, which is why everything
+ * looked microscopic and had to be pinched — no amount of responsive CSS
+ * helps until the browser is told the real width.
+ *
+ * `maximumScale` is deliberately left alone: blocking zoom on a page with
+ * small print is a real accessibility problem, and saves nothing.
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#050508",
+  // Lets the app paint behind the notch and the home indicator once it
+  // is installed, which is the difference between a web page in a
+  // chromeless window and something that looks native.
+  viewportFit: "cover",
 };
 
-export default function RootLayout({
+export async function generateMetadata(): Promise<Metadata> {
+  const { brand } = await loadSiteContent();
+
+  return {
+    ...metadata,
+    title: brand.siteTitle,
+    description: brand.siteDescription,
+    icons: brand.faviconUrl
+      ? { icon: brand.faviconUrl, shortcut: brand.faviconUrl, apple: brand.faviconUrl }
+      : metadata.icons,
+    openGraph: {
+      ...metadata.openGraph,
+      title: brand.siteTitle,
+      description: brand.siteDescription,
+    },
+  };
+}
+
+const metadata: Metadata = {
+  title: "Neura Chat — AI-Powered WhatsApp Automation Platform",
+  description: "Automate customer support, lead generation, sales, follow-ups, and engagement with AI-powered WhatsApp workflows.",
+  keywords: "WhatsApp automation, AI chatbot, WhatsApp marketing, CRM, lead generation",
+  // src/app/icon.svg is picked up automatically; naming it here as well
+  // covers the browsers that ask for a link tag rather than the convention.
+  // The manifest is what makes this installable. Named here rather than
+  // relying on the file convention alone, because a custom favicon from
+  // the admin panel replaces the icons block below and the manifest must
+  // survive that.
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: "/icon.svg",
+    // iOS ignores the manifest's icons entirely and uses this one. A
+    // PNG, because Apple has never rendered an SVG here.
+    apple: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
+  },
+  // iOS reads none of the manifest, so the three things it does support
+  // are set here: open without Safari's chrome, name the icon, and keep
+  // the status bar dark against a dark app.
+  appleWebApp: {
+    capable: true,
+    title: "Neura Chat",
+    statusBarStyle: "black-translucent",
+  },
+  verification: {
+    other: {
+      "facebook-domain-verification": FACEBOOK_DOMAIN_VERIFICATION,
+    },
+  },
+  openGraph: {
+    title: "Neura Chat — AI-Powered WhatsApp Automation Platform",
+    description:
+      "Automate customer support, lead generation, sales, follow-ups, and engagement with AI-powered WhatsApp workflows.",
+    images: ["/logo.svg"],
+  },
+};
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // The agency's colour, if this request came in through their door.
+  // Null on the platform's own domain, which is the common case and costs
+  // one cached lookup.
+  const brand = await currentBrand();
+  const themeCss = brand?.accentHex ? brandThemeCss(brand.accentHex) : "";
+
   return (
-    <html lang="en">
-      <body className="antialiased bg-[#050508] text-white">
+    <html lang="en" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Applies the stored theme before first paint. Without it the dark
+            default renders and then snaps to light on hydration. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        {/* Reveals the page if the client bundle never runs. Every
+            section animates itself in, so its starting state — opacity 0
+            — is what the server sends; one script error and the visitor
+            gets a white page. See MotionFallback. */}
+        <script dangerouslySetInnerHTML={{ __html: MOTION_FALLBACK_SCRIPT }} />
+        {/* The agency's accent, after globals.css so it wins. Derived
+            rather than used raw: the colour somebody picks for a logo is
+            usually unreadable as text on one of the two themes, and
+            buttons you cannot read are worse than the wrong green. */}
+        {themeCss && <style dangerouslySetInnerHTML={{ __html: themeCss }} />}
+      </head>
+      <body className="antialiased bg-[var(--app-bg)] text-[var(--color-white)]">
+        <MotionFallback />
+        {/* Registers the worker that makes this installable. Renders
+            nothing and never blocks the page. */}
+        <ServiceWorker />
+        {/* Without this, every toast.success and toast.error in the app
+            renders nothing at all — which is what made a failing button
+            look like a button with no function behind it. */}
+        <Toasts />
+        {/* Renders nothing unless this browser asked to preview a brand. */}
+        <BrandPreviewBar />
         {children}
+        {/* Renders nothing. Here rather than on the landing page because
+            the sign-up pages are the half of the funnel worth measuring,
+            and they are not under it. Admin's own traffic is excluded in
+            the tracker itself. */}
+        <Suspense fallback={null}>
+          <Track />
+        </Suspense>
       </body>
     </html>
   );
